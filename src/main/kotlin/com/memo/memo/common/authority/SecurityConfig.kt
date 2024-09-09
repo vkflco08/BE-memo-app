@@ -18,24 +18,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtTokenProvider: JwtTokenProvider
+    private val jwtTokenProvider: JwtTokenProvider,
+    @Value("\${cors.allowed.origins}") private val allowedOrigins: List<String> // List<String>으로 설정
 ) {
-
-    @Value("\${cors.allowed.origins}")
-    private lateinit var allowedOrigins: String
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .httpBasic { it.disable() }
             .csrf { it.disable() }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) } // 세션을 사용하지 않음
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers(
                     "/api/member/signup",
                     "/api/member/login",
                     "/api/auth/refresh",
-                ).anonymous() // 해당 url에 접속하는 사용자는 인증되지 않은 사용자.
+                ).anonymous()
                     .requestMatchers(
                         "/api/member/**",
                     ).hasRole("MEMBER")
@@ -45,7 +43,7 @@ class SecurityConfig(
                 JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter::class.java
             )
-            .cors { it.configurationSource(corsConfigurationSource()) } // corsConfigurationSource를 직접 호출
+            .cors { it.configurationSource(corsConfigurationSource()) }
 
         return http.build()
     }
@@ -61,7 +59,7 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf(allowedOrigins)
+        configuration.allowedOrigins = allowedOrigins // application.yml에서 읽어온 값을 설정
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true

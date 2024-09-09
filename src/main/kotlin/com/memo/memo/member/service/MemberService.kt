@@ -66,9 +66,12 @@ class MemberService(
         // Refresh Token 저장
         if (member != null) {
             signService.saveRefreshToken(member, refreshToken)
+            return TokenInfo("Bearer", accessToken, refreshToken)
+        }
+        else{
+            throw InvalidInputException("유저를 찾을 수 없습니다.")
         }
 
-        return TokenInfo("Bearer", accessToken, refreshToken)
     }
 
     /**

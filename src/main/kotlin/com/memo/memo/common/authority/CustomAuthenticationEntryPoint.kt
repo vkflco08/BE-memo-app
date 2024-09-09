@@ -16,6 +16,8 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
         // 리디렉션 URL 설정
         val redirectUrl = "/api/member/login"
 
+        println("redirect to login")
+
         // 클라이언트로 리디렉션
         response.sendRedirect(redirectUrl)
     }
