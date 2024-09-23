@@ -3,6 +3,7 @@ package com.memo.memo.content.controller
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
 import com.memo.memo.content.dto.ContentDtoRequest
+import com.memo.memo.content.dto.ContentListDto
 import com.memo.memo.content.entity.Content
 import com.memo.memo.content.service.ContentService
 import com.memo.memo.member.dto.MemberDtoRequest
@@ -38,10 +39,10 @@ class ContentController(
      * 메모 불러오기
      */
     @GetMapping("/all")
-    fun getMemos(): BaseResponse<List<Content>> {
+    fun getMemos(): BaseResponse<List<ContentListDto>> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: List<Content> = contentService.getMemos(userId)
+        val resultMsg: List<ContentListDto> = contentService.getMemos(userId)
         return BaseResponse(data = resultMsg)
     }
 
