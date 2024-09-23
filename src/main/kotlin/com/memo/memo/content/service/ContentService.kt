@@ -2,6 +2,7 @@ package com.memo.memo.content.service
 
 import com.memo.memo.common.exception.InvalidInputException
 import com.memo.memo.content.dto.ContentDtoRequest
+import com.memo.memo.content.dto.ContentListDto
 import com.memo.memo.content.entity.Content
 import com.memo.memo.content.repository.ContentRepository
 import com.memo.memo.member.entity.Member
@@ -31,11 +32,19 @@ class ContentService(
     /**
      * 메모 불러오기
      */
-    fun getMemos(userId: Long): List<Content> {
+    fun getMemos(userId: Long): List<ContentListDto> {
         val findMember : Member = memberRepository.findByIdOrNull(userId)
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         val findMemos : List<Content> = contentRepository.findAllByMember(findMember)
-        return findMemos
+
+        // Content를 ContentDtoResponse로 매핑하여 반환
+        return findMemos.map { content ->
+            ContentListDto(
+                title = content.title,
+                content = content.content,
+                date = content.date
+            )
+        }
     }
 
     /**
