@@ -78,7 +78,8 @@ class MemberService(
      * 내정보 조회
      */
     fun searchMyInfo(userId: Long?): MemberDtoResponse {
-        val member: Member = memberRepository.findByIdOrNull(userId) ?: throw InvalidInputException("id", "회원번호($userId)가 존재하지 않습니다.")
+        val member: Member = memberRepository.findByIdOrNull(userId)
+            ?: throw InvalidInputException("id", "회원번호($userId)가 존재하지 않습니다.")
         return member.toDto()
     }
 

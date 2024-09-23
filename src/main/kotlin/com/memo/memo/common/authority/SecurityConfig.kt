@@ -36,6 +36,7 @@ class SecurityConfig(
                 ).anonymous()
                     .requestMatchers(
                         "/api/member/**",
+                        "/api/memo/**"
                     ).hasRole("MEMBER")
             }
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
