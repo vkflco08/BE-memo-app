@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
     uniqueConstraints = [UniqueConstraint(name = "uk_member_login_id", columnNames = ["loginId"])],
 )
 class Member(
-@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
     @Column(nullable = false, length = 30, updatable = false)

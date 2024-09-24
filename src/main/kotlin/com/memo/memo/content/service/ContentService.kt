@@ -22,7 +22,7 @@ class ContentService(
      */
     @Transactional
     fun saveMemo(contentDtoRequest: ContentDtoRequest): String {
-        val findMember : Member = memberRepository.findByIdOrNull(contentDtoRequest.id)
+        val findMember : Member = memberRepository.findByIdOrNull(contentDtoRequest.memberId)
             ?: return "유저를 찾을 수 없습니다"
         var saveContent : Content = contentDtoRequest.toEntity(findMember)
         contentRepository.save(saveContent)

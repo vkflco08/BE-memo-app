@@ -5,6 +5,7 @@ import com.memo.memo.member.entity.Member
 
 data class ContentDtoRequest (
     var id: Long,
+    var memberId: Long,
     val title: String,
     val content: String,
     val date: String, // yyyy-MM-dd 형식의 문자열

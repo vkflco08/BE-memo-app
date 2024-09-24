@@ -1,6 +1,5 @@
 package com.memo.memo.content.entity
 
-import com.memo.memo.member.dto.MemberDtoResponse
 import com.memo.memo.member.entity.Member
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -19,7 +18,7 @@ class Content(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
-    @Column(nullable = false, length = 30, updatable = false)
+    @Column(nullable = false, length = 30)
     var title: String,
     @Column(nullable = false, length = 1000)
     var content: String,

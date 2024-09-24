@@ -40,8 +40,6 @@ data class MemberDtoRequest(
         get() = _name!!
     val email: String
         get() = _email!!
-    private fun String.toLocalDate(): LocalDate =
-        LocalDate.parse(this, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
     fun toEntity(): Member = Member(id, loginId, password, name, email)
 }
 
