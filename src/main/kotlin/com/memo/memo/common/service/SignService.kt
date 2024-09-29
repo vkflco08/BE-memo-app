@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import com.memo.memo.common.authority.JwtTokenProvider
 import com.memo.memo.common.authority.TokenInfo
+import com.memo.memo.common.dto.CustomUser
 import com.memo.memo.common.dto.TokenDtoRequest
 import com.memo.memo.common.entity.MemberRefreshToken
 import com.memo.memo.common.exception.InvalidInputException
@@ -20,24 +21,39 @@ class SignService(
         member: Member,
         refreshToken: String,
     ) {
-        memberRefreshTokenRepository.save(MemberRefreshToken(member, refreshToken))
+        // 멤버의 기존 리프레시 토큰 조회
+        val existingToken = memberRefreshTokenRepository.findByMember(member)
+
+        if (existingToken != null) {
+            // 기존 토큰이 존재하면 업데이트
+            existingToken.refreshToken = refreshToken
+            memberRefreshTokenRepository.save(existingToken)  // 업데이트된 토큰 저장
+        } else {
+            // 기존 토큰이 없으면 새로 저장
+            memberRefreshTokenRepository.save(MemberRefreshToken(member, refreshToken))
+        }
     }
 
     fun newAccessToken(tokenDtoRequest: TokenDtoRequest): TokenInfo {
-        val findRefreshToken = memberRefreshTokenRepository.findById(tokenDtoRequest.memberId).get().refreshToken
-
-        // Refresh token 검증
-        if (!jwtTokenProvider.validateToken(findRefreshToken)) {
+        // Refresh token 검증 및 사용자 정보 추출
+        if (!jwtTokenProvider.validateToken(tokenDtoRequest.refreshToken)) {
             throw InvalidInputException("로그인이 만료되었습니다.")
         }
 
-        if (tokenDtoRequest.refreshToken == findRefreshToken) {
-            // Refresh token으로부터 사용자 정보 추출
-            val authentication = jwtTokenProvider.getAuthentication(findRefreshToken)
+        // 사용자 정보 추출
+        val authentication = jwtTokenProvider.getAuthentication(tokenDtoRequest.refreshToken)
+        val userId : Long = (authentication.principal as CustomUser).userId
+            ?: throw InvalidInputException("유저의 아이디가 null일 수 없습니다.")
+
+        // DB에서 저장된 Refresh Token을 확인
+        val storedRefreshToken = memberRefreshTokenRepository.findById(userId).get().refreshToken
+
+        // 전달받은 refresh token이 저장된 refresh token과 일치하는지 확인
+        if (tokenDtoRequest.refreshToken == storedRefreshToken) {
             // 새로운 Access token 생성
             val newAccessToken = jwtTokenProvider.createAccessToken(authentication)
 
-            return TokenInfo("Bearer", newAccessToken, findRefreshToken)
+            return TokenInfo("Bearer", newAccessToken, storedRefreshToken)
         } else {
             throw InvalidInputException("다시 로그인해주세요")
         }

@@ -13,7 +13,7 @@ data class ContentDtoRequest (
     fun toEntity(member: Member): Content = Content(id, title, content, date, member)
 }
 
-data class ContentListDto(
+data class ContentDtoResponse(
     var title: String,
     var content: String,
     val date: String,

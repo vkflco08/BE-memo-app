@@ -2,7 +2,7 @@ package com.memo.memo.content.service
 
 import com.memo.memo.common.exception.InvalidInputException
 import com.memo.memo.content.dto.ContentDtoRequest
-import com.memo.memo.content.dto.ContentListDto
+import com.memo.memo.content.dto.ContentDtoResponse
 import com.memo.memo.content.entity.Content
 import com.memo.memo.content.repository.ContentRepository
 import com.memo.memo.member.entity.Member
@@ -22,29 +22,52 @@ class ContentService(
      */
     @Transactional
     fun saveMemo(contentDtoRequest: ContentDtoRequest): String {
-        val findMember : Member = memberRepository.findByIdOrNull(contentDtoRequest.memberId)
+        val findMember: Member = memberRepository.findByIdOrNull(contentDtoRequest.memberId)
             ?: return "유저를 찾을 수 없습니다"
-        var saveContent : Content = contentDtoRequest.toEntity(findMember)
-        contentRepository.save(saveContent)
-        return "메모가 저장되었습니다."
+
+        // 같은 날짜의 메모를 찾기
+        val existingContent: Content? = contentRepository.findByMemberAndDate(findMember, contentDtoRequest.date)
+
+        if (existingContent != null) {
+            // 메모가 존재하면 업데이트
+            existingContent.title = contentDtoRequest.title
+            existingContent.content = contentDtoRequest.content
+            contentRepository.save(existingContent) // 변경사항 저장
+            return "메모가 업데이트되었습니다."
+        } else {
+            // 메모가 존재하지 않으면 새로운 메모 저장
+            val saveContent: Content = contentDtoRequest.toEntity(findMember)
+            contentRepository.save(saveContent)
+            return "메모가 저장되었습니다."
+        }
     }
 
     /**
-     * 메모 불러오기
+     * 전체 메모 불러오기
      */
-    fun getMemos(userId: Long): List<ContentListDto> {
+    fun getMemos(userId: Long): List<ContentDtoResponse> {
         val findMember : Member = memberRepository.findByIdOrNull(userId)
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         val findMemos : List<Content> = contentRepository.findAllByMember(findMember)
 
-        // Content를 ContentDtoResponse로 매핑하여 반환
         return findMemos.map { content ->
-            ContentListDto(
+            ContentDtoResponse(
                 title = content.title,
                 content = content.content,
                 date = content.date
             )
         }
+    }
+
+    /**
+     * 메모 불러오기
+     */
+    fun getMemo(userId: Long, date: String): ContentDtoResponse? {
+        val findMember : Member = memberRepository.findByIdOrNull(userId)
+            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+        val findMemo = contentRepository.findByMemberAndDate(findMember, date)
+            ?: return null
+        return findMemo.toDto()
     }
 
     /**

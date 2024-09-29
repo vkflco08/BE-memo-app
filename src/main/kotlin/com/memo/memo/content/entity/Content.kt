@@ -1,5 +1,6 @@
 package com.memo.memo.content.entity
 
+import com.memo.memo.content.dto.ContentDtoResponse
 import com.memo.memo.member.entity.Member
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -27,4 +28,7 @@ class Content(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_content_member_id"))
     val member: Member,
-)
+){
+    fun toDto(): ContentDtoResponse =
+        ContentDtoResponse(title, content, date)
+}
