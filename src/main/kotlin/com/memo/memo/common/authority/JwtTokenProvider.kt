@@ -14,8 +14,8 @@ import com.memo.memo.common.dto.CustomUser
 import java.util.Date
 import org.slf4j.LoggerFactory
 
-const val ACCESS_EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 1//30 // 30분
-const val REFRESH_EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 2// * 24 // 24시간
+const val ACCESS_EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 30 // 30분
+const val REFRESH_EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 60 * 24 // 24시간
 
 @Component
 class JwtTokenProvider {
