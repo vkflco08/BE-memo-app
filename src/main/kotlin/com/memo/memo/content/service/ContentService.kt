@@ -3,8 +3,11 @@ package com.memo.memo.content.service
 import com.memo.memo.common.exception.InvalidInputException
 import com.memo.memo.content.dto.ContentDtoRequest
 import com.memo.memo.content.dto.ContentDtoResponse
+import com.memo.memo.content.dto.UserNoteDto
 import com.memo.memo.content.entity.Content
+import com.memo.memo.content.entity.UserNote
 import com.memo.memo.content.repository.ContentRepository
+import com.memo.memo.content.repository.UserNoteRepository
 import com.memo.memo.member.entity.Member
 import com.memo.memo.member.repository.MemberRepository
 import jakarta.transaction.Transactional
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service
 class ContentService(
     private val contentRepository: ContentRepository,
     private val memberRepository: MemberRepository,
+    private val usernoteRepository: UserNoteRepository,
 ) {
     /**
      * 메모 저장
@@ -87,5 +91,42 @@ class ContentService(
         } else {
             return "수정할 메모가 존재하지 않습니다."
         }
+    }
+
+    /*====================================*/
+
+    /**
+     * 유저노트 저장
+     */
+    @Transactional
+    fun saveUsernote(userNoteDto: UserNoteDto): String {
+        val findMember: Member = memberRepository.findByIdOrNull(userNoteDto.memberId)
+            ?: return "유저를 찾을 수 없습니다"
+
+        // 같은 날짜의 메모를 찾기
+        val existingUsernote: UserNote? = usernoteRepository.findByMember(findMember)
+
+        if (existingUsernote != null) {
+            // 메모가 존재하면 업데이트
+            existingUsernote.content = userNoteDto.content
+            usernoteRepository.save(existingUsernote) // 변경사항 저장
+            return "메모가 업데이트되었습니다."
+        } else {
+            // 메모가 존재하지 않으면 새로운 메모 저장
+            val saveUserNote: UserNote = userNoteDto.toEntity(userNoteDto.content, findMember)
+            usernoteRepository.save(saveUserNote)
+            return "메모가 저장되었습니다."
+        }
+    }
+
+    /**
+     * 유저노트 불러오기
+     */
+    fun getUsernote(userId: Long): UserNoteDto? {
+        val findMember : Member = memberRepository.findByIdOrNull(userId)
+            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+        val findMemo = usernoteRepository.findByMember(findMember)
+            ?: return null
+        return findMemo.toDto()
     }
 }

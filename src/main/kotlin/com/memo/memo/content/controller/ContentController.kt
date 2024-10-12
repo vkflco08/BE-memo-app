@@ -4,6 +4,7 @@ import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
 import com.memo.memo.content.dto.ContentDtoRequest
 import com.memo.memo.content.dto.ContentDtoResponse
+import com.memo.memo.content.dto.UserNoteDto
 import com.memo.memo.content.service.ContentService
 import jakarta.validation.Valid
 import org.springframework.security.core.context.SecurityContextHolder
@@ -24,7 +25,7 @@ class ContentController(
      * 메모 저장
      */
     @PostMapping("/new")
-    fun signUp(
+    fun saveMemo(
         @RequestBody @Valid contentDtoRequest: ContentDtoRequest,
     ): BaseResponse<Unit> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
@@ -69,5 +70,27 @@ class ContentController(
         contentDtoRequest.id = userId
         val resultMsg: String = contentService.editMemo(contentDtoRequest)
         return BaseResponse(message = resultMsg)
+    }
+
+    /**
+     * 유저 노트
+     */
+    @PostMapping("/user_note")
+    fun saveUsernote(
+        @RequestBody userNoteDto: UserNoteDto,
+    ): BaseResponse<Unit> {
+        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        userNoteDto.memberId = userId
+        val resultMsg: String = contentService.saveUsernote(userNoteDto)
+        return BaseResponse(message = resultMsg)
+    }
+
+    @GetMapping("/user_note")
+    fun getUsernote(): BaseResponse<UserNoteDto?> {
+        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val resultMsg: UserNoteDto? = contentService.getUsernote(userId)
+        return BaseResponse(data = resultMsg)
     }
 }
