@@ -77,6 +77,7 @@ class ContentService(
     /**
      * 메모 수정하기
      */
+    @Transactional
     fun editMemo(contentDtoRequest: ContentDtoRequest): String {
         val findMember = memberRepository.findByIdOrNull(contentDtoRequest.id)
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")

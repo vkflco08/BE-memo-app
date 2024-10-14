@@ -1,5 +1,6 @@
 package com.memo.memo.content.entity
 
+import BaseEntity
 import com.memo.memo.content.dto.ContentDtoResponse
 import com.memo.memo.content.dto.UserNoteDto
 import com.memo.memo.member.entity.Member
@@ -30,7 +31,7 @@ class Content(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_content_member_id"))
     val member: Member,
-){
+): BaseEntity(){
     fun toDto(): ContentDtoResponse =
         ContentDtoResponse(title, content, date)
 }
@@ -48,7 +49,7 @@ class UserNote(
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_user_note_member_id"))
     val member: Member // 유저와의 관계
-) {
+): BaseEntity() {
     fun toDto(): UserNoteDto =
         UserNoteDto(id, member.id, content)
 }
