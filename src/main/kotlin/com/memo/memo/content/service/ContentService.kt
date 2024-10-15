@@ -54,7 +54,8 @@ class ContentService(
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         val findMemos : List<Content> = contentRepository.findAllByMember(findMember)
 
-        return findMemos.map { content ->
+        // 날짜를 기준으로 최신순으로 정렬합니다.
+        return findMemos.sortedByDescending { it.date }.map { content ->
             ContentDtoResponse(
                 title = content.title,
                 content = content.content,
@@ -64,7 +65,7 @@ class ContentService(
     }
 
     /**
-     * 메모 불러오기
+     * 특정 날짜 메모 불러오기
      */
     fun getMemo(userId: Long, date: String): ContentDtoResponse? {
         val findMember : Member = memberRepository.findByIdOrNull(userId)
