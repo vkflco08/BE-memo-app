@@ -11,6 +11,10 @@ import com.memo.memo.content.repository.UserNoteRepository
 import com.memo.memo.member.entity.Member
 import com.memo.memo.member.repository.MemberRepository
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -47,15 +51,18 @@ class ContentService(
     }
 
     /**
-     * 전체 메모 불러오기
+     * 전체 메모 불러오기 (페이징 적용)
      */
-    fun getMemos(userId: Long): List<ContentDtoResponse> {
-        val findMember : Member = memberRepository.findByIdOrNull(userId)
+    fun getMemos(userId: Long, page: Int, size: Int): Page<ContentDtoResponse> {
+        val findMember: Member = memberRepository.findByIdOrNull(userId)
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")
-        val findMemos : List<Content> = contentRepository.findAllByMember(findMember)
 
-        // 날짜를 기준으로 최신순으로 정렬합니다.
-        return findMemos.sortedByDescending { it.date }.map { content ->
+        // PageRequest를 사용하여 페이지와 크기를 설정합니다.
+        val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
+        val findMemos: Page<Content> = contentRepository.findAllByMember(findMember, pageable)
+
+        // Content를 ContentDtoResponse로 매핑하여 반환
+        return findMemos.map { content ->
             ContentDtoResponse(
                 title = content.title,
                 content = content.content,
@@ -63,6 +70,7 @@ class ContentService(
             )
         }
     }
+
 
     /**
      * 특정 날짜 메모 불러오기
