@@ -71,6 +71,24 @@ class ContentService(
         }
     }
 
+    /**
+     * 특정 달에 해당하는 메모 리턴
+     */
+    fun getMemosByMonth(userId: Long, yearMonth: String): List<ContentDtoResponse> {
+        val findMember: Member = memberRepository.findByIdOrNull(userId)
+            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+
+        // 연월(YYYY-MM)에 맞는 메모 조회
+        val findMemos: List<Content> = contentRepository.findAllByMemberAndYearMonth(findMember, yearMonth)
+
+        return findMemos.map { content ->
+            ContentDtoResponse(
+                title = content.title,
+                content = content.content,
+                date = content.date
+            )
+        }
+    }
 
     /**
      * 특정 날짜 메모 불러오기

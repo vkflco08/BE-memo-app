@@ -53,6 +53,20 @@ class ContentController(
     }
 
     /**
+     * 달에 해당하는 메모 리턴
+     */
+    @GetMapping("/memos/{yearMonth}")
+    fun getMemosByMonth(
+        @PathVariable yearMonth: String
+    ): BaseResponse<List<ContentDtoResponse>> {
+        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+
+        val resultMsg: List<ContentDtoResponse> = contentService.getMemosByMonth(userId, yearMonth)
+        return BaseResponse(data = resultMsg)
+    }
+
+    /**
      * 메모 불러오기
      * @param date 메모 날짜
      */
