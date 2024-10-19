@@ -102,6 +102,17 @@ class ContentService(
     }
 
     /**
+     * 메모 삭제하기
+     */
+    @Transactional
+    fun removeMemo(userId: Long, date: String): String {
+        val findMember : Member = memberRepository.findByIdOrNull(userId)
+            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+        contentRepository.deleteByMemberAndDate(findMember, date)
+        return "메모가 정상적으로 삭제되었습니다."
+    }
+
+    /**
      * 메모 수정하기
      */
     @Transactional

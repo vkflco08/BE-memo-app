@@ -14,6 +14,7 @@ interface ContentRepository : JpaRepository<Content, Long> {
     fun findByMemberAndDate(member: Member, date: String): Content?
     @Query("SELECT c FROM Content c WHERE c.member = :member AND c.date LIKE CONCAT(:yearMonth, '%')")
     fun findAllByMemberAndYearMonth(@Param("member") member: Member, @Param("yearMonth") yearMonth: String): List<Content>
+    fun deleteByMemberAndDate(member: Member, date: String)
 }
 
 interface UserNoteRepository : JpaRepository<UserNote, Long> {

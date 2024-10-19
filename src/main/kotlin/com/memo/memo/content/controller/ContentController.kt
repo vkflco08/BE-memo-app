@@ -9,6 +9,7 @@ import com.memo.memo.content.service.ContentService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -76,6 +77,17 @@ class ContentController(
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         val resultMsg: ContentDtoResponse? = contentService.getMemo(userId, date)
         return BaseResponse(data = resultMsg)
+    }
+    /**
+     * 메모 불러오기
+     * @param date 메모 날짜
+     */
+    @DeleteMapping("/{date}")
+    fun removeMemo(@PathVariable date: String): BaseResponse<Unit?> {
+        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val resultMsg: String = contentService.removeMemo(userId, date)
+        return BaseResponse(message = resultMsg)
     }
 
     /**
