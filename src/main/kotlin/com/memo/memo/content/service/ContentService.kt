@@ -132,6 +132,20 @@ class ContentService(
         }
     }
 
+    /**
+     * 메모 검색하기
+     */
+    fun searchContentByKeyword(userId: Long, keyword: String, page: Int, size: Int): Page<ContentDtoResponse> {
+        val findMember: Member = memberRepository.findByIdOrNull(userId)
+            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+
+        val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
+        val contents = contentRepository.searchByMemberAndKeyword(findMember, keyword, pageable)
+
+        // ContentDtoResponse 형태로 변환하여 반환
+        return contents.map { it.toDto() }
+    }
+
     /*====================================*/
 
     /**

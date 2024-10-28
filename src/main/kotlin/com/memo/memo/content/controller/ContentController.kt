@@ -105,6 +105,21 @@ class ContentController(
     }
 
     /**
+     * 메모 검색하기
+     */
+    @GetMapping("/search")
+    fun searchContents(
+        @RequestParam keyword: String,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int // 기본값 10개의 항목
+    ): BaseResponse<Page<ContentDtoResponse>> {
+        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+
+        return BaseResponse(data = contentService.searchContentByKeyword(userId, keyword, page, size))
+    }
+
+    /**
      * 유저 노트
      */
     @PostMapping("/user_note")
