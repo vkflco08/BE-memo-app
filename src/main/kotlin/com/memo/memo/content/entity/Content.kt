@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import lombok.Getter
@@ -24,7 +25,8 @@ class Content(
     var id: Long? = null,
     @Column(nullable = false, length = 30)
     var title: String,
-    @Column(nullable = false, length = 1000)
+    @Lob
+    @Column(nullable = false)
     var content: String,
     @Column(nullable = false, length = 30)
     val date: String,
