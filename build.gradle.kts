@@ -28,7 +28,6 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	// jwt
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -37,6 +36,18 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+	// api rate limit - bucket4j
+	implementation("com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1")
+
+	// Spring Boot Starter Test
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(group = "org.mockito", module = "mockito-core")
+	}
+	// JUnit 5 - 최신 버전으로 업데이트
+	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+	// Spring Security Test
+	testImplementation("org.springframework.security:spring-security-test")
 }
 
 kotlin {

@@ -1,5 +1,6 @@
 package com.memo.memo.common.authority
 
+import com.memo.memo.common.rate_limit.RateLimitFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -19,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtTokenProvider: JwtTokenProvider,
+    private val rateLimitFilter: RateLimitFilter,
     @Value("\${cors.allowed.origins}") private val allowedOrigins: List<String> // List<String>으로 설정
 ) {
 
@@ -40,6 +43,10 @@ class SecurityConfig(
                     ).hasRole("MEMBER")
             }
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
+            .addFilterBefore(
+                rateLimitFilter,
+                SecurityContextHolderAwareRequestFilter::class.java
+            ) // RateLimitFilter 추가
             .addFilterBefore(
                 JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter::class.java
