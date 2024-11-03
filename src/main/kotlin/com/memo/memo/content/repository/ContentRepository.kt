@@ -24,6 +24,9 @@ interface ContentRepository : JpaRepository<Content, Long> {
         @Param("keyword") keyword: String,
         pageable: Pageable
     ): Page<Content>
+
+    fun countByMemberId(memberId: Long): Int
+    fun findAllByMemberId(memberId: Long): List<Content>
 }
 
 interface UserNoteRepository : JpaRepository<UserNote, Long> {
