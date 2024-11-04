@@ -15,13 +15,12 @@ class StatisticsController(private val statisticsService: StatisticsService) {
 
     @GetMapping("/member")
     fun getStatistics(): BaseResponse<StatisticsResponseDto> {
-        print("StatisticsController: getMemberStatistics 실행됨")  // 디버그용 print
-
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         val probability = statisticsService.calculateMemoCreationProbability(userId)
         val avgTime = statisticsService.calculateAverageMemoCreationTime(userId)
-        return BaseResponse(data = StatisticsResponseDto(probability, avgTime))
+        val memoLength = statisticsService.analyzeMemoLength(userId)
+        return BaseResponse(data = StatisticsResponseDto(probability, avgTime, memoLength))
     }
 }
