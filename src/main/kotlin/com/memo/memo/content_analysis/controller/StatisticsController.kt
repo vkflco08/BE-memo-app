@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/statistics")
 class StatisticsController(private val statisticsService: StatisticsService) {
-
     @GetMapping("/member")
     fun getStatistics(): BaseResponse<StatisticsResponseDto> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
