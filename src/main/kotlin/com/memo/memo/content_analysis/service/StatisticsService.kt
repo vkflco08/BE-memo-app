@@ -18,7 +18,7 @@ class StatisticsService(
     private val logger: Logger = LoggerFactory.getLogger(StatisticsService::class.java)
 
     // 1. 메모 작성 확률 계산
-    fun calculateMemoCreationProbability(memberId: Long): Double {
+    fun calculateMemoCreationProbability(memberId: Long): List<Double> {
         logger.info("Calculating memo creation probability for member ID: {}", memberId)
         val member = memberRepository.findById(memberId)
             .orElseThrow { IllegalArgumentException("존재하지 않는 사용자입니다.") }
@@ -26,13 +26,13 @@ class StatisticsService(
         val totalDays = ChronoUnit.DAYS.between(member.createdDate, LocalDateTime.now()).toDouble()
 
         if (totalDays == 0.0) {
-            return 0.0 // 회원가입 당일일 경우
+            return listOf(0.0) // 회원가입 당일일 경우
         }
 
         val memoCount = contentRepository.countByMemberId(memberId).toDouble()
         val probability = (memoCount / totalDays) * 100 // 확률을 백분율로 반환
         logger.info("Calculated probability: {}%", probability)
-        return probability
+        return listOf(probability, memoCount)
     }
 
     // 2. 평균 메모 작성 시간 계산

@@ -14,7 +14,7 @@ class RateLimitConfig {
     @Bean
     fun rateLimitBucket(): Bucket {
         // 1분당 최대 10회의 요청을 허용
-        val limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)))
+        val limit = Bandwidth.classic(30, Refill.greedy(30, Duration.ofMinutes(1)))
         return Bucket4j.builder().addLimit(limit).build()
     }
 }

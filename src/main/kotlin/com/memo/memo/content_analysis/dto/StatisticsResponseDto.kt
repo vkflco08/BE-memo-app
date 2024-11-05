@@ -3,7 +3,7 @@ package com.memo.memo.content_analysis.dto
 import java.time.LocalDateTime
 
 class StatisticsResponseDto (
-    val memoCreationProbability: Double, // 작성 확률 (%)
+    val memoCreationProbability: List<Double>, // 작성 확률 (%), 전체 메모 개수
     val averageMemoCreationTime: MemoAverageCreationStats,
     val memoLengthStats: MemoLengthStats,
 )
