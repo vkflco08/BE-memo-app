@@ -55,6 +55,7 @@ class ContentController(
 
     /**
      * 달에 해당하는 메모 리턴
+     * @param yearMonth YYYY-MM
      */
     @GetMapping("/memos/{yearMonth}")
     fun getMemosByMonth(

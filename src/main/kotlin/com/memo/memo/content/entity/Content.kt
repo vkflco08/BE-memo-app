@@ -45,7 +45,8 @@ class UserNote(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
 
-    @Column(nullable = false, length = 1000)
+    @Lob
+    @Column(nullable = false)
     var content: String,
 
     @OneToOne(fetch = FetchType.LAZY)
