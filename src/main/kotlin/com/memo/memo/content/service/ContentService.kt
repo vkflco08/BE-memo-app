@@ -31,7 +31,7 @@ class ContentService(
     @Transactional
     fun saveMemo(contentDtoRequest: ContentDtoRequest): String {
         val findMember: Member = memberRepository.findByIdOrNull(contentDtoRequest.memberId)
-            ?: return "유저를 찾을 수 없습니다"
+            ?: return "유저를 찾을 수 없습니다."
 
         // 같은 날짜의 메모를 찾기
         val existingContent: Content? = contentRepository.findByMemberAndDate(findMember, contentDtoRequest.date)
@@ -154,7 +154,7 @@ class ContentService(
     @Transactional
     fun saveUsernote(userNoteDto: UserNoteDto): String {
         val findMember: Member = memberRepository.findByIdOrNull(userNoteDto.memberId)
-            ?: return "유저를 찾을 수 없습니다"
+            ?: return "유저를 찾을 수 없습니다."
 
         // 같은 날짜의 메모를 찾기
         val existingUsernote: UserNote? = usernoteRepository.findByMember(findMember)

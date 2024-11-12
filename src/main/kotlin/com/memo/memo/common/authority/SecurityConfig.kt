@@ -41,6 +41,8 @@ class SecurityConfig(
                         "/api/member/**",
                         "/api/memo/**",
                         "/api/statistics/**",
+                        "/api/topic/**",
+                        "/api/topic-content/**",
                     ).hasRole("MEMBER")
             }
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
