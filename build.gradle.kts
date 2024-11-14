@@ -23,6 +23,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	compileOnly("org.projectlombok:lombok")
@@ -35,10 +36,11 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-
 	// api rate limit - bucket4j
 	implementation("com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1")
+
+	// redis cache server
+	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// Spring Boot Starter Test
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
