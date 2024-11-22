@@ -21,11 +21,11 @@ class TopicController(
     private val topicService: TopicService
 ) {
     @PostMapping("/new/{topicName}")
-    fun createTopic(@PathVariable topicName: String): BaseResponse<Unit> {
+    fun createTopic(@PathVariable topicName: String): BaseResponse<Long> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        return BaseResponse(message = topicService.createTopic(userId, topicName))
+        return BaseResponse(data = topicService.createTopic(userId, topicName))
     }
 
     @PutMapping("/edit")

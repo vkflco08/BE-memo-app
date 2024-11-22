@@ -6,8 +6,10 @@ import com.memo.memo.topic_content.entity.TopicContent
 
 interface TopicRepository : JpaRepository<Topic, Long> {
     fun findByMemberId(memberId: Long): List<Topic>
+    fun findTopicByName(topicName: String): Topic
 }
 
 interface TopicContentRepository : JpaRepository<TopicContent, Long> {
     fun findByMemberIdAndTopicId(memberId: Long, topicId: Long?): List<TopicContent>
+
 }

@@ -18,11 +18,14 @@ class TopicService(
     private val memberRepository: MemberRepository
 ) {
     @Transactional
-    fun createTopic(userId: Long, topicName: String): String {
+    fun createTopic(userId: Long, topicName: String): Long? {
         val findMember = memberRepository.findByIdOrNull(userId)
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")
-        topicRepository.save(Topic(name = topicName, member = findMember))
-        return "주제를 정상적으로 저장했습니다."
+
+        val topic = Topic(name = topicName, member = findMember)
+        topicRepository.save(topic)
+
+        return topic.id
     }
 
     // Topic 수정
