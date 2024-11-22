@@ -42,7 +42,7 @@ class TopicController(
     }
 
     // 주제번호 제목 갯수
-    @GetMapping("/member")
+    @GetMapping("/list")
     fun getTopicsWithContentCountByMember(): BaseResponse<List<TopicResponseDto>> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
