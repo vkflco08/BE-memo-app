@@ -2,7 +2,7 @@ package com.memo.memo.topic_content.service
 
 import com.memo.memo.common.exception.InvalidInputException
 import com.memo.memo.member.repository.MemberRepository
-import com.memo.memo.topic_content.dto.TopicRequestDto
+import com.memo.memo.topic_content.dto.TopicDto
 import com.memo.memo.topic_content.dto.TopicResponseDto
 import com.memo.memo.topic_content.entity.Topic
 import com.memo.memo.topic_content.repository.TopicContentRepository
@@ -30,7 +30,7 @@ class TopicService(
 
     // Topic 수정
     @Transactional
-    fun updateTopic(userId: Long, topicRequestDto: TopicRequestDto): String {
+    fun updateTopic(userId: Long, topicRequestDto: TopicDto): String {
         val findTopic = topicRepository.findByIdOrNull(topicRequestDto.topicId)
 
         return if (findTopic != null) {
@@ -59,7 +59,7 @@ class TopicService(
             TopicResponseDto(
                 topicId = topic.id,
                 topicName = topic.name,
-                contentNum = topicContentRepository.countByMemberAndTopic(findMember, topic).size
+                contentNum = topicContentRepository.countByMemberAndTopic(findMember, topic)
             )
         }
     }

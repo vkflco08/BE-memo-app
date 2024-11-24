@@ -5,6 +5,7 @@ import com.memo.memo.common.dto.CustomUser
 import com.memo.memo.content.dto.ContentDtoResponse
 import com.memo.memo.topic_content.dto.TopicContentRequestDto
 import com.memo.memo.topic_content.dto.TopicContentResponseDto
+import com.memo.memo.topic_content.dto.TopicDto
 import com.memo.memo.topic_content.service.TopicContentService
 import org.springframework.data.domain.Page
 import org.springframework.security.core.context.SecurityContextHolder
@@ -26,11 +27,11 @@ class TopicContentController(
     @PostMapping("/new")
     fun createTopicContent(
         @RequestBody topicContentRequestDto: TopicContentRequestDto
-    ): BaseResponse<Unit> {
+    ): BaseResponse<TopicDto> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        return BaseResponse(message = topicContentService.createTopicContent(userId, topicContentRequestDto))
+        return BaseResponse(data = topicContentService.createTopicContent(userId, topicContentRequestDto))
     }
 
     @PutMapping("/edit")
@@ -44,7 +45,7 @@ class TopicContentController(
     }
 
     // 컨텐츠 번호
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{contentId}")
     fun deleteTopicContent(
         @PathVariable contentId: Long,
     ): BaseResponse<Unit> {
@@ -65,7 +66,7 @@ class TopicContentController(
     }
 
     /**
-     * 메모 검색하기
+     * 주제별 메모 검색하기
      */
     @GetMapping("/{topicId}/search")
     fun searchTopicContents(

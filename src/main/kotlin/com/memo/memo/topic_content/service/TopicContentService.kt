@@ -7,6 +7,7 @@ import com.memo.memo.member.entity.Member
 import com.memo.memo.member.repository.MemberRepository
 import com.memo.memo.topic_content.dto.TopicContentRequestDto
 import com.memo.memo.topic_content.dto.TopicContentResponseDto
+import com.memo.memo.topic_content.dto.TopicDto
 import com.memo.memo.topic_content.entity.TopicContent
 import com.memo.memo.topic_content.repository.TopicContentRepository
 import com.memo.memo.topic_content.repository.TopicRepository
@@ -26,7 +27,7 @@ class TopicContentService(
 ) {
     // TopicContent 생성
     @Transactional
-    fun createTopicContent(userId: Long, topicContentRequestDto:TopicContentRequestDto): String {
+    fun createTopicContent(userId: Long, topicContentRequestDto:TopicContentRequestDto): TopicDto {
         val findMember = memberRepository.findByIdOrNull(userId)
             ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         val findTopic = topicRepository.findByIdOrNull(topicContentRequestDto.topicId)
@@ -34,7 +35,7 @@ class TopicContentService(
 
         val topicContent = topicContentRequestDto.toEntity(findMember, findTopic)
         topicContentRepository.save(topicContent)
-        return "정상적으로 저장했습니다."
+        return TopicDto(topicId = findTopic.id!!, topicName = findTopic.name!!)
     }
 
     // TopicContent 수정
@@ -57,19 +58,18 @@ class TopicContentService(
 
     // 특정 멤버와 Topic에 해당하는 모든 TopicContent 조회
     @Transactional(readOnly = true)
-    fun getAllTopicContentsByMemberAndTopic(memberId: Long, topicId: Long, page: Int, size: Int): Page<TopicContentResponseDto> {
-        val findMember = memberRepository.findByIdOrNull(memberId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
-
+    fun getAllTopicContentsByMemberAndTopic(userId: Long, topicId: Long, page: Int, size: Int): Page<TopicContentResponseDto> {
         // PageRequest를 사용하여 페이지와 크기를 설정합니다.
-        val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
-        val topicContent: Page<TopicContent> = topicContentRepository.findByMemberIdAndTopicId(findMember, topicId, pageable)
+        val pageable: Pageable = PageRequest.of(page, size, Sort.by("createdDate").descending())
+        val topicContent: Page<TopicContent> = topicContentRepository.findByMemberIdAndTopicId(userId, topicId, pageable)
 
         // topicContent TopicContentResponseDto 매핑하여 반환
         return topicContent.map { content ->
             TopicContentResponseDto(
+                contentId = content.id,
                 title = content.title,
                 content = content.content,
+                date = content.createdDate,
             )
         }
     }
@@ -81,17 +81,16 @@ class TopicContentService(
         page: Int,
         size: Int
     ): Page<TopicContentResponseDto>? {
-        val findMember: Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
-
-        val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
-        val topicContent = topicContentRepository.searchTopicContentByMemberAndKeyword(findMember, topicId, keyword, pageable)
+        val pageable: Pageable = PageRequest.of(page, size, Sort.by("createdDate").descending())
+        val topicContent = topicContentRepository.searchTopicContentByMemberAndKeyword(userId, topicId, keyword, pageable)
 
         // TopicContentResponseDto 형태로 변환하여 반환
         return topicContent.map { content ->
             TopicContentResponseDto(
+                contentId = content.id,
                 title = content.title,
                 content = content.content,
+                date = content.createdDate,
             )
         }
     }

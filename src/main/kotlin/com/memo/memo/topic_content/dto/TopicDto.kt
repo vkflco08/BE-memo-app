@@ -3,8 +3,9 @@ package com.memo.memo.topic_content.dto
 import com.memo.memo.member.entity.Member
 import com.memo.memo.topic_content.entity.Topic
 import com.memo.memo.topic_content.entity.TopicContent
+import java.time.LocalDateTime
 
-data class TopicRequestDto(
+data class TopicDto(
     val topicId: Long,
     val topicName: String,
 )
@@ -34,7 +35,9 @@ data class TopicContentRequestDto(
 }
 
 data class TopicContentResponseDto(
+    val contentId: Long? = null,
     val title: String? = null,
     val content: String? = null,
+    val date: LocalDateTime? = null,
 )
 

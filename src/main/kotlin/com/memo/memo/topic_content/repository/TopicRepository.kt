@@ -16,15 +16,15 @@ interface TopicRepository : JpaRepository<Topic, Long> {
 }
 
 interface TopicContentRepository : JpaRepository<TopicContent, Long> {
-    fun countByMemberAndTopic(memberId: Member, topic: Topic): List<TopicContent>
+    fun countByMemberAndTopic(memberId: Member, topic: Topic): Int
 
-    fun findByMemberIdAndTopicId(memberId: Member, topicId: Long?, pageable: Pageable): Page<TopicContent>
+    fun findByMemberIdAndTopicId(memberId: Long, topicId: Long?, pageable: Pageable): Page<TopicContent>
 
     @Query("Select p from TopicContent p where p.topic.id = :topicId AND " +
-            "p.member = :member AND " +
+            "p.member.id = :userId AND " +
             "p.title LIKE %:keyword% OR p.content LIKE %:keyword%")
     fun searchTopicContentByMemberAndKeyword(
-        @Param("member") member: Member,
+        @Param("userId") userId: Long,
         @Param("topicId") topicId: Long?,
         @Param("keyword") keyword: String,
         pageable: Pageable,

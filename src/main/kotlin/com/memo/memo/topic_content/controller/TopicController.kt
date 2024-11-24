@@ -2,7 +2,7 @@ package com.memo.memo.topic_content.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
-import com.memo.memo.topic_content.dto.TopicRequestDto
+import com.memo.memo.topic_content.dto.TopicDto
 import com.memo.memo.topic_content.dto.TopicResponseDto
 import com.memo.memo.topic_content.service.TopicService
 import org.springframework.security.core.context.SecurityContextHolder
@@ -29,7 +29,7 @@ class TopicController(
     }
 
     @PutMapping("/edit")
-    fun updateTopic(@RequestBody topicRequestDto: TopicRequestDto): BaseResponse<Unit> {
+    fun updateTopic(@RequestBody topicRequestDto: TopicDto): BaseResponse<Unit> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
