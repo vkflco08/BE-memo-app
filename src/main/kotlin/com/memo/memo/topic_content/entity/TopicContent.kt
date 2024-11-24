@@ -1,7 +1,6 @@
 package com.memo.memo.topic_content.entity
 import BaseEntity
 import com.memo.memo.member.entity.Member
-import com.memo.memo.topic_content.dto.TopicContentResponseDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

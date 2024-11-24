@@ -53,11 +53,13 @@ class TopicService(
     // 특정 멤버가 작성한 모든 Topic과 각 Topic에 속한 메모 개수 조회
     @Transactional(readOnly = true)
     fun getTopicsWithContentCountByMember(memberId: Long): List<TopicResponseDto> {
+        val findMember = memberRepository.findByIdOrNull(memberId)
+            ?: throw InvalidInputException("유저를 찾을 수 없습니다.")
         return topicRepository.findByMemberId(memberId).map { topic ->
             TopicResponseDto(
                 topicId = topic.id,
                 topicName = topic.name,
-                contentNum = topicContentRepository.findByMemberIdAndTopicId(memberId, topic.id).size
+                contentNum = topicContentRepository.countByMemberAndTopic(findMember, topic).size
             )
         }
     }
