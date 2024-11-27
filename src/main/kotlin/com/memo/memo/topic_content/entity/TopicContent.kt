@@ -16,11 +16,11 @@ class TopicContent(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false)
     var title: String? = null,
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     var content: String? = null,
 
     @ManyToOne

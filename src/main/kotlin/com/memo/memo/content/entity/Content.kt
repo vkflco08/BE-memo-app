@@ -23,13 +23,17 @@ class Content(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
+
     @Column(nullable = false, length = 30)
     var title: String,
+
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     var content: String,
+
     @Column(nullable = false, length = 30)
     val date: String,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_content_member_id"))
     val member: Member,
