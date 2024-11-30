@@ -37,11 +37,19 @@ class TopicContentController(
     @PutMapping("/edit")
     fun updateTopicContent(
         @RequestBody topicContentRequestDto: TopicContentRequestDto
-    ): BaseResponse<Unit> {
+    ): BaseResponse<TopicDto> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        return BaseResponse(message = topicContentService.updateTopicContent(userId, topicContentRequestDto))
+        return BaseResponse(data = topicContentService.updateTopicContent(userId, topicContentRequestDto))
+    }
+
+    // 특정 컨텐츠 불러오기
+    @GetMapping("/{contentId}")
+    fun getTopicContent(
+        @PathVariable contentId: Long,
+    ): BaseResponse<TopicContentResponseDto> {
+        return BaseResponse(data = topicContentService.getTopicContent(contentId))
     }
 
     // 컨텐츠 번호
@@ -53,7 +61,7 @@ class TopicContentController(
     }
 
     // 주제에 해당하는 전체 콘텐츠 불러오기
-    @GetMapping("/{topicId}")
+    @GetMapping("/{topicId}/all")
     fun getAllTopicContentsByMemberAndTopic(
         @PathVariable topicId: Long,
         @RequestParam(defaultValue = "0") page: Int, // 기본값 0번째 페이지

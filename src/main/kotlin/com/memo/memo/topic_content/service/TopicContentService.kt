@@ -8,6 +8,7 @@ import com.memo.memo.member.repository.MemberRepository
 import com.memo.memo.topic_content.dto.TopicContentRequestDto
 import com.memo.memo.topic_content.dto.TopicContentResponseDto
 import com.memo.memo.topic_content.dto.TopicDto
+import com.memo.memo.topic_content.dto.TopicResponseDto
 import com.memo.memo.topic_content.entity.TopicContent
 import com.memo.memo.topic_content.repository.TopicContentRepository
 import com.memo.memo.topic_content.repository.TopicRepository
@@ -40,13 +41,15 @@ class TopicContentService(
 
     // TopicContent 수정
     @Transactional
-    fun updateTopicContent(userId: Long, topicContentRequestDto:TopicContentRequestDto): String {
+    fun updateTopicContent(userId: Long, topicContentRequestDto:TopicContentRequestDto): TopicDto {
         val topicContent = topicContentRepository.findByIdOrNull(topicContentRequestDto.contentId)
             ?: throw IllegalArgumentException("작성한 기록을 찾을 수 없습니다.")
+        val findTopic = topicRepository.findByIdOrNull(topicContentRequestDto.topicId)
+            ?: throw InvalidInputException("존재하지 않는 주제입니다.")
         topicContent.title = topicContentRequestDto.title
         topicContent.content = topicContentRequestDto.content
         topicContentRepository.save(topicContent)
-        return "정상적으로 수정했습니다."
+        return TopicDto(topicId = findTopic.id!!, topicName = findTopic.name!!)
     }
 
     // TopicContent 삭제
@@ -93,5 +96,16 @@ class TopicContentService(
                 date = content.createdDate,
             )
         }
+    }
+
+    fun getTopicContent(contentId: Long): TopicContentResponseDto {
+        val getTopicContent = topicContentRepository.findByIdOrNull(contentId)
+            ?: throw IllegalArgumentException("작성한 기록을 찾을 수 없습니다.")
+        return TopicContentResponseDto(
+            contentId = getTopicContent.id,
+            title = getTopicContent.title,
+            content = getTopicContent.content,
+            date = getTopicContent.createdDate
+        )
     }
 }
