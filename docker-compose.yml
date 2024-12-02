@@ -1,0 +1,18 @@
+services:
+  spring-boot-app:
+    image: seungbinjo/spring-boot-app:latest
+    container_name: memo-spring-boot-app
+    ports:
+      - "8181:8181"
+    volumes:
+      - /opt/profile-images:/uploads
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"

@@ -6,18 +6,19 @@ import com.memo.memo.common.dto.CustomUser
 import com.memo.memo.member.dto.LoginDto
 import com.memo.memo.member.dto.MemberDtoRequest
 import com.memo.memo.member.dto.MemberDtoResponse
+import com.memo.memo.member.dto.MemberProfileDtoRequest
 import com.memo.memo.member.service.MemberService
 import jakarta.validation.Valid
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/member")
@@ -61,13 +62,15 @@ class MemberController(
      */
     @PutMapping("/info_edit")
     fun saveMyInfo(
-        @RequestBody @Valid memberDtoRequest: MemberDtoRequest,
-    ): BaseResponse<Unit> {
+        @RequestPart("profileImage") profileImage: MultipartFile?,
+        @RequestBody @Valid memberProfileDtoRequest: MemberProfileDtoRequest
+    ): BaseResponse<MemberDtoResponse> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        memberDtoRequest.id = userId
-        val resultMsg: String = memberService.saveMyInfo(memberDtoRequest)
-        return BaseResponse(message = resultMsg)
+        memberProfileDtoRequest.id = userId
+        val resultMsg = memberService.saveMyInfo(profileImage, memberProfileDtoRequest)
+        return BaseResponse(data = resultMsg)
     }
+
 
     /**
      * 로그아웃

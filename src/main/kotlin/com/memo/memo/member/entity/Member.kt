@@ -1,6 +1,8 @@
 package com.memo.memo.member.entity
 
 import BaseEntity
+import com.memo.memo.common.status.ROLE
+import com.memo.memo.member.dto.MemberDtoResponse
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -16,10 +18,6 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import lombok.Getter
-import com.memo.memo.common.status.ROLE
-import com.memo.memo.member.dto.MemberDtoResponse
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Entity
 @Getter
@@ -35,18 +33,27 @@ class Member(
     @Column(nullable = false, length = 100)
     val password: String,
     @Column(nullable = false, length = 10)
-    val name: String,
+    var name: String,
     @Column(nullable = false, length = 30)
-    val email: String,
+    var email: String,
+    @Column(nullable = true)
+    var profileImage: String? = null
 ) : BaseEntity() {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     val memberRole: List<MemberRole>? = null
 
-    // birthDate를 string 으로 바꾸기 위한 함수
-    private fun LocalDate.formatDate(): String = this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-
     fun toDto(): MemberDtoResponse =
-        MemberDtoResponse(id!!, loginId, name, email)
+        MemberDtoResponse(
+            id = this.id!!,
+            loginId = this.loginId,
+            name = this.name,
+            email = this.email,
+            profileImage = this.profileImage,
+            createdDate = this.createdDate
+        )
+
+    fun toDto(profileImageBase64: String?): MemberDtoResponse =
+        MemberDtoResponse(id!!, loginId, name, email, profileImage, profileImageBase64, createdDate)
 }
 
 @Entity

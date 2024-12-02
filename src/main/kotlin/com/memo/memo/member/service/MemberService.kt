@@ -9,6 +9,7 @@ import com.memo.memo.common.status.ROLE
 import com.memo.memo.member.dto.LoginDto
 import com.memo.memo.member.dto.MemberDtoRequest
 import com.memo.memo.member.dto.MemberDtoResponse
+import com.memo.memo.member.dto.MemberProfileDtoRequest
 import com.memo.memo.member.entity.Member
 import com.memo.memo.member.entity.MemberRole
 import com.memo.memo.member.repository.MemberRepository
@@ -18,6 +19,8 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Transactional
 @Service
@@ -28,6 +31,7 @@ class MemberService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val signService: SignService,
     private val memberRefreshTokenRepository: MemberRefreshTokenRepository,
+    private val fileService: FileService,
 ) {
     /**
      * 회원가입
@@ -79,18 +83,34 @@ class MemberService(
      */
     fun searchMyInfo(userId: Long?): MemberDtoResponse {
         val member: Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("id", "회원번호($userId)가 존재하지 않습니다.")
-        return member.toDto()
+            ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
+
+        val findImage = fileService.getProfileImage(member)
+
+        return member.toDto(findImage)
     }
 
     /**
      * 내 정보 수정
      */
     @Transactional
-    fun saveMyInfo(memberDtoRequest: MemberDtoRequest): String {
-        val member: Member = memberDtoRequest.toEntity()
-        memberRepository.save(member)
-        return "수정 완료되었습니다."
+    fun saveMyInfo(
+        @RequestPart("profileImage") profileImage: MultipartFile?,
+        memberProfileDtoRequest: MemberProfileDtoRequest
+    ): MemberDtoResponse {
+        val existingMember: Member = memberRepository.findByIdOrNull(memberProfileDtoRequest.id)
+            ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
+
+        // 프로필 이미지 저장
+        profileImage?.let {
+            val savedPath = fileService.saveProfileImage(existingMember.id, it) // 파일 저장
+            memberProfileDtoRequest.profileImage = savedPath // 저장 경로를 DTO에 설정
+        }
+
+        memberProfileDtoRequest.toEntity(existingMember)
+
+        // 변경 감지로 업데이트 수행
+        return existingMember.toDto()
     }
 
     /**

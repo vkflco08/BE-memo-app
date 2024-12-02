@@ -5,8 +5,7 @@ import com.memo.memo.member.entity.Member
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.LocalDateTime
 
 data class MemberDtoRequest(
     var id: Long?,
@@ -63,4 +62,26 @@ data class MemberDtoResponse(
     val loginId: String,
     val name: String,
     val email: String,
+    val profileImage: String?,  // 기존 이미지 URL
+    val profileImageBase64: String? = null, // Base64로 인코딩된 이미지 데이터
+    val createdDate: LocalDateTime?,
 )
+
+data class MemberProfileDtoRequest(
+    var id: Long? = null, // 사용자 ID
+    @field:NotBlank(message = "이름은 필수 항목입니다.")
+    var name: String,
+    @field:NotBlank(message = "이메일은 필수 항목입니다.")
+    @field:Email(message = "유효하지 않은 이메일 형식입니다.")
+    var email: String,
+    var profileImage: String? = null // 프로필 이미지 URL (선택)
+) {
+    fun toEntity(existingMember: Member): Member {
+        return existingMember.apply {
+            this.name = this@MemberProfileDtoRequest.name
+            this.email = this@MemberProfileDtoRequest.email
+            this.profileImage = this@MemberProfileDtoRequest.profileImage
+        }
+    }
+}
+
