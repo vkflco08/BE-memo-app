@@ -63,14 +63,13 @@ class MemberController(
     @PutMapping("/info_edit")
     fun saveMyInfo(
         @RequestPart("profileImage") profileImage: MultipartFile?,
-        @RequestBody @Valid memberProfileDtoRequest: MemberProfileDtoRequest
+        @RequestPart("memberProfileDtoRequest") memberProfileDtoRequest: MemberProfileDtoRequest
     ): BaseResponse<MemberDtoResponse> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
         memberProfileDtoRequest.id = userId
         val resultMsg = memberService.saveMyInfo(profileImage, memberProfileDtoRequest)
         return BaseResponse(data = resultMsg)
     }
-
 
     /**
      * 로그아웃
