@@ -41,10 +41,25 @@ class FileService {
     }
 
     fun getProfileImage(member: Member): String? {
+        // 유저의 아이디로 폴더 경로 생성
         val profileImagePath = "${uploadDir}/${member.id}"  // 예: /opt/profile-images/1
-        val profileImageBase64 = member.profileImage?.let {
-            encodeImageToBase64(profileImagePath + "/$it")
+
+        // 폴더가 존재하는지 확인
+        val memberFolder = File(profileImagePath)
+        if (!memberFolder.exists() || !memberFolder.isDirectory) {
+            // 폴더가 없으면 null 리턴
+            return null
         }
-        return profileImageBase64
+
+        // 이미지 파일 경로 생성 (예: /opt/profile-images/1/filename.jpg)
+        val profileImageFile = File(profileImagePath, member.profileImage ?: "")
+
+        // 이미지 파일이 존재하면 Base64로 인코딩
+        return if (profileImageFile.exists()) {
+            encodeImageToBase64(profileImageFile.absolutePath)
+        } else {
+            // 이미지 파일이 없으면 null 리턴
+            null
+        }
     }
 }
