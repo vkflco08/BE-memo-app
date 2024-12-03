@@ -44,7 +44,11 @@ class SecurityConfig(
                         "/api/topic/**",
                         "/api/topic-content/**",
                     ).hasRole("MEMBER")
+                    .requestMatchers(
+                        "/uploads/**",
+                        "/favicon.ico").permitAll() // 이미지 제공 URL에 대한 접근 허용
             }
+
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
             .addFilterBefore(
                 rateLimitFilter,

@@ -9,6 +9,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
+import kotlin.io.path.exists
 
 @Service
 @Slf4j
@@ -36,7 +37,19 @@ class FileService {
             throw e
         }
 
-        // 파일 이름 생성
+        // 기존 이미지 파일이 존재하는지 확인하고 삭제
+        val existingFile = userDir.resolve(file.originalFilename ?: "default.jpg")
+        if (existingFile.exists()) {
+            try {
+                // 기존 파일 삭제
+                Files.delete(existingFile)
+                log.info("기존 파일을 삭제했습니다: ${existingFile}")
+            } catch (e: Exception) {
+                log.error("기존 파일을 삭제하는 중 오류가 발생했습니다: ${e.message}")
+            }
+        }
+
+        // 새 파일 이름 생성
         val fileName = file.originalFilename ?: "default.jpg"  // 파일 이름이 null일 경우 default 이름 설정
         val filePath = userDir.resolve(fileName)  // 경로 결합 시 resolve 사용
 
@@ -48,7 +61,6 @@ class FileService {
 
         return filePath.toString()  // 저장된 파일 경로 반환
     }
-
 
     fun encodeImageToBase64(imagePath: String): String {
         val path = Paths.get(imagePath)
