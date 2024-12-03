@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import java.time.LocalDateTime
 
+import com.fasterxml.jackson.annotation.JsonCreator
+
 data class MemberDtoRequest(
     var id: Long?,
 
@@ -76,6 +78,9 @@ data class MemberProfileDtoRequest(
     var email: String,
     var profileImage: String? = null // 프로필 이미지 URL (선택)
 ) {
+    // 기본 생성자 추가
+    constructor() : this(null, "", "", null)
+
     fun toEntity(existingMember: Member): Member {
         return existingMember.apply {
             this.name = this@MemberProfileDtoRequest.name
@@ -84,4 +89,14 @@ data class MemberProfileDtoRequest(
         }
     }
 }
+
+
+data class MemberProfileDtoRequestTest @JsonCreator constructor(
+    @JsonProperty("id") var id: Long? = null,
+    @field:NotBlank(message = "이름은 필수 항목입니다.") var name: String,
+    @field:NotBlank(message = "이메일은 필수 항목입니다.")
+    @field:Email(message = "유효하지 않은 이메일 형식입니다.") var email: String,
+    var profileImage: String? = null
+)
+
 

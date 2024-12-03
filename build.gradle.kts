@@ -29,6 +29,8 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	implementation("com.mysql:mysql-connector-j")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
 
 	// jwt
 	implementation("org.springframework.boot:spring-boot-starter-validation")

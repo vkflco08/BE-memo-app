@@ -1,5 +1,7 @@
 package com.memo.memo.member.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.memo.memo.common.authority.TokenInfo
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
@@ -7,8 +9,12 @@ import com.memo.memo.member.dto.LoginDto
 import com.memo.memo.member.dto.MemberDtoRequest
 import com.memo.memo.member.dto.MemberDtoResponse
 import com.memo.memo.member.dto.MemberProfileDtoRequest
+import com.memo.memo.member.dto.MemberProfileDtoRequestTest
 import com.memo.memo.member.service.MemberService
 import jakarta.validation.Valid
+import org.springframework.context.annotation.Bean
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -60,15 +67,38 @@ class MemberController(
     /**
      * 내 정보 수정
      */
-    @PutMapping("/info_edit")
+    @PutMapping("/info_edit", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun saveMyInfo(
         @RequestPart("profileImage") profileImage: MultipartFile?,
-        @RequestPart("memberProfileDtoRequest") memberProfileDtoRequest: MemberProfileDtoRequest
+        @RequestParam("memberProfileDtoRequest") memberProfileDtoRequest: String
     ): BaseResponse<MemberDtoResponse> {
+        println("profileImage: ${profileImage?.originalFilename}")  // 파일 이름 출력
+        println("memberProfileDtoRequest: $memberProfileDtoRequest")  // DTO 데이터 출력
+
+        val objectMapper = ObjectMapper()
+        val memberDto = objectMapper.readValue(memberProfileDtoRequest, MemberProfileDtoRequest::class.java)
+
+        // 사용자 정보 처리
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        memberProfileDtoRequest.id = userId
-        val resultMsg = memberService.saveMyInfo(profileImage, memberProfileDtoRequest)
+        memberDto.id = userId
+
+        val resultMsg = memberService.saveMyInfo(profileImage, memberDto)
         return BaseResponse(data = resultMsg)
+    }
+
+    @PostMapping("/test", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadFile(
+        @RequestPart("file") file: MultipartFile,
+        @RequestPart("description") description: String
+    ): ResponseEntity<String> {
+        // 파일 이름 확인
+        val fileName = file.originalFilename ?: "unknown"
+
+        // 파일 처리 로직 (파일 저장 등)
+        println("파일 이름: $fileName")
+        println("설명: $description")
+
+        return ResponseEntity.ok("파일 업로드 성공")
     }
 
     /**

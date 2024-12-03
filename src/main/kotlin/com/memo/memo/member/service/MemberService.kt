@@ -103,7 +103,9 @@ class MemberService(
 
         // 프로필 이미지 저장
         profileImage?.let {
+            println("파일이 업로드 되었는지 확인: ${it.originalFilename}")  // 로그 추가
             val savedPath = fileService.saveProfileImage(existingMember.id, it) // 파일 저장
+            println("파일 저장 경로: $savedPath")  // 로그 추가
             memberProfileDtoRequest.profileImage = savedPath // 저장 경로를 DTO에 설정
         }
 
