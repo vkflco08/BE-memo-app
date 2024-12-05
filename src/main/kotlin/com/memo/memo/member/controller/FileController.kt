@@ -1,7 +1,6 @@
 package com.memo.memo.member.controller
 
 import com.memo.memo.common.dto.BaseResponse
-import com.memo.memo.member.service.FileService
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -44,9 +43,9 @@ class FileController() {
     }
 
     @GetMapping("/uploads/{userId}/{filename}")
-    fun getProfileImage(@PathVariable userId: Long, @PathVariable filename: String): FileSystemResource {
+    fun getProfileImage(@PathVariable userId: Long, @PathVariable filename: String): BaseResponse<File> {
         // 사용자 폴더 경로 생성
         val filePath = File("$uploadDir/$userId/$filename")
-        return FileSystemResource(filePath)
+        return BaseResponse(data = filePath)
     }
 }
