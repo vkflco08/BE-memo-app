@@ -1,7 +1,6 @@
 package com.memo.memo.member.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.memo.memo.common.authority.TokenInfo
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
@@ -9,12 +8,9 @@ import com.memo.memo.member.dto.LoginDto
 import com.memo.memo.member.dto.MemberDtoRequest
 import com.memo.memo.member.dto.MemberDtoResponse
 import com.memo.memo.member.dto.MemberProfileDtoRequest
-import com.memo.memo.member.dto.MemberProfileDtoRequestTest
 import com.memo.memo.member.service.MemberService
 import jakarta.validation.Valid
-import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -84,21 +80,6 @@ class MemberController(
 
         val resultMsg = memberService.saveMyInfo(profileImage, memberDto)
         return BaseResponse(data = resultMsg)
-    }
-
-    @PostMapping("/test", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadFile(
-        @RequestPart("file") file: MultipartFile,
-        @RequestPart("description") description: String
-    ): ResponseEntity<String> {
-        // 파일 이름 확인
-        val fileName = file.originalFilename ?: "unknown"
-
-        // 파일 처리 로직 (파일 저장 등)
-        println("파일 이름: $fileName")
-        println("설명: $description")
-
-        return ResponseEntity.ok("파일 업로드 성공")
     }
 
     /**

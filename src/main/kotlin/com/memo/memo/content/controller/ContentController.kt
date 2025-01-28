@@ -43,7 +43,7 @@ class ContentController(
      * 전체 메모 불러오기 (페이징 적용)
      */
     @GetMapping("/all")
-    @Cacheable(value = ["memos"], key = "#page + '-' + #size")
+//    @Cacheable(value = ["memos"], key = "#page + '-' + #size")
     fun getMemos(
         @RequestParam(defaultValue = "0") page: Int, // 기본값 0번째 페이지
         @RequestParam(defaultValue = "10") size: Int // 기본값 10개의 항목
@@ -60,7 +60,7 @@ class ContentController(
      * @param yearMonth YYYY-MM
      */
     @GetMapping("/memos/{yearMonth}")
-    @Cacheable(value = ["memosByMonth"], key = "#yearMonth") // 캐시 이름은 "memosByMonth", key는 yearMonth로 설정
+//    @Cacheable(value = ["memosByMonth"], key = "#yearMonth") // 캐시 이름은 "memosByMonth", key는 yearMonth로 설정
     fun getMemosByMonth(
         @PathVariable yearMonth: String
     ): BaseResponse<List<ContentDtoResponse>> {
@@ -139,7 +139,7 @@ class ContentController(
     }
 
     @GetMapping("/user_note")
-    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
+//    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
     fun getUsernote(): BaseResponse<UserNoteDto?> {
         val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
             ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
