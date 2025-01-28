@@ -50,7 +50,7 @@ class UserNote(
     var id: Long? = null,
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     var content: String,
 
     @OneToOne(fetch = FetchType.LAZY)
