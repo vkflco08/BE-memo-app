@@ -48,4 +48,8 @@ interface ContentRepository : JpaRepository<Content, Long> {
 
 interface UserNoteRepository : JpaRepository<UserNote, Long> {
     fun findByMember(findMember: Member): UserNote?
+
+    fun findAllByMember(findMember: Member): List<UserNote>?
+
+    fun deleteAllByMember(findMember: Member)
 }

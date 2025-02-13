@@ -2,7 +2,9 @@ package com.memo.memo.member.entity
 
 import BaseEntity
 import com.memo.memo.common.status.ROLE
+import com.memo.memo.content.entity.UserNote
 import com.memo.memo.member.dto.MemberDtoResponse
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -39,6 +41,9 @@ class Member(
     @Column(nullable = true)
     var profileImage: String? = null,
 ) : BaseEntity() {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val userNotes: MutableList<UserNote> = mutableListOf()
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     val memberRole: List<MemberRole>? = null
 

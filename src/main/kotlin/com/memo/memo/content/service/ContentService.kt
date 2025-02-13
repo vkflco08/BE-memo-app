@@ -11,6 +11,9 @@ import com.memo.memo.content.repository.UserNoteRepository
 import com.memo.memo.member.entity.Member
 import com.memo.memo.member.repository.MemberRepository
 import jakarta.transaction.Transactional
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -18,7 +21,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
-@Transactional
+@Slf4j
 @Service
 class ContentService(
     private val contentRepository: ContentRepository,
@@ -174,41 +177,52 @@ class ContentService(
 
     // ====================================
 
+    private val log: Logger = LoggerFactory.getLogger(ContentService::class.java)
+
     /**
      * 유저노트 저장
      */
     @Transactional
-    fun saveUsernote(userNoteDto: UserNoteDto): String {
+    fun saveUsernote(
+        userNoteDto: List<UserNoteDto>,
+        userId: Long,
+    ): String {
         val findMember: Member =
-            memberRepository.findByIdOrNull(userNoteDto.memberId)
-                ?: return "유저를 찾을 수 없습니다."
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
 
-        // 같은 날짜의 메모를 찾기
-        val existingUsernote: UserNote? = usernoteRepository.findByMember(findMember)
+        val existingNotes = usernoteRepository.findAllByMember(findMember) // 기존 노트 조회
+        val existingNoteMap = existingNotes?.associateBy { it.id } ?: emptyMap() // ID 기준으로 매핑
 
-        if (existingUsernote != null) {
-            // 메모가 존재하면 업데이트
-            existingUsernote.content = userNoteDto.content
-            usernoteRepository.save(existingUsernote) // 변경사항 저장
-            return "메모가 업데이트되었습니다."
-        } else {
-            // 메모가 존재하지 않으면 새로운 메모 저장
-            val saveUserNote: UserNote = userNoteDto.toEntity(userNoteDto.content, findMember)
-            usernoteRepository.save(saveUserNote)
-            return "메모가 저장되었습니다."
+        val newNotes = mutableListOf<UserNote>() // 새로 추가될 노트들을 담을 리스트
+
+        userNoteDto.forEach { dto ->
+            if (dto.id != null && existingNoteMap.containsKey(dto.id)) {
+                // 기존 노트가 존재하면 업데이트
+                val existingNote = existingNoteMap[dto.id]
+
+                existingNote?.update(dto.title ?: "new user note", dto.content)
+                existingNote?.let { newNotes.add(it) } // 업데이트된 노트를 newNotes에 추가
+            } else {
+                newNotes.add(dto.toEntity(findMember))
+            }
         }
+
+        usernoteRepository.saveAll(newNotes) // 변경사항 저장
+
+        return "메모가 업데이트되었습니다."
     }
 
     /**
      * 유저노트 불러오기
      */
-    fun getUsernote(userId: Long): UserNoteDto? {
+    fun getUsernote(userId: Long): List<UserNoteDto>? {
         val findMember: Member =
             memberRepository.findByIdOrNull(userId)
                 ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         val findMemo =
-            usernoteRepository.findByMember(findMember)
+            usernoteRepository.findAllByMember(findMember)
                 ?: return null
-        return findMemo.toDto()
+        return findMemo.map { entity -> entity.toDto() }
     }
 }

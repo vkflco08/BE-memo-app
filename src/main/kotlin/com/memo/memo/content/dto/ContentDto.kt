@@ -22,11 +22,15 @@ data class ContentDtoResponse(
 
 data class UserNoteDto(
     var id: Long?,
-    var memberId: Long?,
-    val content: String,
+    var title: String?,
+    var content: String,
+    val memberId: Long?,
 ) {
-    fun toEntity(
-        content: String,
-        member: Member,
-    ): UserNote = UserNote(id, content, member)
+    fun toEntity(member: Member): UserNote =
+        UserNote(
+            id = null, // ID는 DB에서 자동생성
+            title = title ?: "제목 없음", // 기본값 설정
+            content = content,
+            member = member,
+        )
 }

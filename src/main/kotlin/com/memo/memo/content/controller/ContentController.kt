@@ -139,24 +139,23 @@ class ContentController(
      */
     @PostMapping("/user_note")
     fun saveUsernote(
-        @RequestBody userNoteDto: UserNoteDto,
+        @RequestBody userNoteDto: List<UserNoteDto>,
     ): BaseResponse<Unit> {
-        val userId =
+        val userid =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        userNoteDto.memberId = userId
-        val resultMsg: String = contentService.saveUsernote(userNoteDto)
+        val resultMsg: String = contentService.saveUsernote(userNoteDto, userid)
         return BaseResponse(message = resultMsg)
     }
 
     //    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
     @GetMapping("/user_note")
-    fun getUsernote(): BaseResponse<UserNoteDto?> {
+    fun getUsernote(): BaseResponse<List<UserNoteDto>?> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        val resultMsg: UserNoteDto? = contentService.getUsernote(userId)
+        val resultMsg: List<UserNoteDto>? = contentService.getUsernote(userId)
         return BaseResponse(data = resultMsg)
     }
 }

@@ -14,7 +14,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToOne
 import lombok.Getter
 
 @Entity
@@ -41,14 +40,24 @@ class Content(
 @Getter
 class UserNote(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
+    @Column(nullable = false, length = 30)
+    var title: String = "new user note",
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     var content: String,
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_user_note_member_id"))
     val member: Member, // 유저와의 관계
 ) : BaseEntity() {
-    fun toDto(): UserNoteDto = UserNoteDto(id, member.id, content)
+    fun toDto(): UserNoteDto = UserNoteDto(id, title, content, member.id)
+
+    fun update(
+        title: String,
+        content: String,
+    ) {
+        this.title = title
+        this.content = content
+    }
 }
