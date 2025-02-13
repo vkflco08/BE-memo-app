@@ -11,12 +11,11 @@ import java.io.IOException
 
 @Component
 class RateLimitFilter(private val bucket: Bucket) : OncePerRequestFilter() {
-
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response)

@@ -3,9 +3,9 @@ package com.memo.memo.common.dto
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.User
 
-class CustomUser (
+class CustomUser(
     val userId: Long?,
     userName: String,
     password: String,
-    authorities: Collection<GrantedAuthority>
+    authorities: Collection<GrantedAuthority>,
 ) : User(userName, password, authorities)

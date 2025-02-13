@@ -11,13 +11,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 @EnableCaching
-class MemoApplication{
-	@Bean
-	fun auditorProvider(): AuditorAware<String> {
-		return SpringSecurityAuditorAware()
-	}
+class MemoApplication {
+    @Bean
+    fun auditorProvider(): AuditorAware<String> {
+        return SpringSecurityAuditorAware()
+    }
 }
 
 fun main(args: Array<String>) {
-	runApplication<MemoApplication>(*args)
+    runApplication<MemoApplication>(*args)
 }

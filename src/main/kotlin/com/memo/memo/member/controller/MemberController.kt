@@ -66,10 +66,10 @@ class MemberController(
     @PutMapping("/info_edit", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun saveMyInfo(
         @RequestPart("profileImage") profileImage: MultipartFile?,
-        @RequestParam("memberProfileDtoRequest") memberProfileDtoRequest: String
+        @RequestParam("memberProfileDtoRequest") memberProfileDtoRequest: String,
     ): BaseResponse<MemberDtoResponse> {
-        println("profileImage: ${profileImage?.originalFilename}")  // 파일 이름 출력
-        println("memberProfileDtoRequest: $memberProfileDtoRequest")  // DTO 데이터 출력
+        println("profileImage: ${profileImage?.originalFilename}") // 파일 이름 출력
+        println("memberProfileDtoRequest: $memberProfileDtoRequest") // DTO 데이터 출력
 
         val objectMapper = ObjectMapper()
         val memberDto = objectMapper.readValue(memberProfileDtoRequest, MemberProfileDtoRequest::class.java)
@@ -87,7 +87,9 @@ class MemberController(
      */
     @DeleteMapping("/logout")
     fun logout(): BaseResponse<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         val resultMsg: String = memberService.deleteRefToken(userId)
         return BaseResponse(message = resultMsg)

@@ -71,19 +71,18 @@ class MemberService(
         if (member != null) {
             signService.saveRefreshToken(member, refreshToken)
             return TokenInfo("Bearer", accessToken, refreshToken)
-        }
-        else{
+        } else {
             throw InvalidInputException("유저를 찾을 수 없습니다.")
         }
-
     }
 
     /**
      * 내정보 조회
      */
     fun searchMyInfo(userId: Long?): MemberDtoResponse {
-        val member: Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
+        val member: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
 
         val findImage = fileService.getProfileImage(member)
 
@@ -96,16 +95,17 @@ class MemberService(
     @Transactional
     fun saveMyInfo(
         @RequestPart("profileImage") profileImage: MultipartFile?,
-        memberProfileDtoRequest: MemberProfileDtoRequest
+        memberProfileDtoRequest: MemberProfileDtoRequest,
     ): MemberDtoResponse {
-        val existingMember: Member = memberRepository.findByIdOrNull(memberProfileDtoRequest.id)
-            ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
+        val existingMember: Member =
+            memberRepository.findByIdOrNull(memberProfileDtoRequest.id)
+                ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
 
         // 프로필 이미지 저장
         profileImage?.let {
-            println("파일이 업로드 되었는지 확인: ${it.originalFilename}")  // 로그 추가
+            println("파일이 업로드 되었는지 확인: ${it.originalFilename}") // 로그 추가
             val savedPath = fileService.saveProfileImage(existingMember.id, it) // 파일 저장
-            println("파일 저장 경로: $savedPath")  // 로그 추가
+            println("파일 저장 경로: $savedPath") // 로그 추가
             memberProfileDtoRequest.profileImage = savedPath // 저장 경로를 DTO에 설정
         }
 

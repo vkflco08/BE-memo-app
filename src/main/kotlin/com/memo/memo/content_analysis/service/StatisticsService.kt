@@ -13,15 +13,16 @@ import java.time.temporal.ChronoUnit
 @Service
 class StatisticsService(
     private val contentRepository: ContentRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(StatisticsService::class.java)
 
     // 1. 메모 작성 확률 계산
     fun calculateMemoCreationProbability(memberId: Long): List<Double> {
         logger.info("Calculating memo creation probability for member ID: {}", memberId)
-        val member = memberRepository.findById(memberId)
-            .orElseThrow { IllegalArgumentException("존재하지 않는 사용자입니다.") }
+        val member =
+            memberRepository.findById(memberId)
+                .orElseThrow { IllegalArgumentException("존재하지 않는 사용자입니다.") }
 
         val totalDays = ChronoUnit.DAYS.between(member.createdDate, LocalDateTime.now()).toDouble()
 
@@ -65,7 +66,7 @@ class StatisticsService(
             averageHours = averageHours,
             averageMinutes = averageMinutes,
             averageSeconds = averageSeconds,
-            creationTimes = creationDates
+            creationTimes = creationDates,
         )
     }
 
@@ -84,7 +85,7 @@ class StatisticsService(
         logger.info("Calculated average memo length: {}", averageLength)
         return MemoLengthStats(
             averageLength = averageLength,
-            lengths = memoLengths // 각 메모 길이 리스트를 포함
+            lengths = memoLengths, // 각 메모 길이 리스트를 포함
         )
     }
 }

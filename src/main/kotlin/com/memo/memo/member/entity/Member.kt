@@ -37,7 +37,7 @@ class Member(
     @Column(nullable = false, length = 30)
     var email: String,
     @Column(nullable = true)
-    var profileImage: String? = null
+    var profileImage: String? = null,
 ) : BaseEntity() {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     val memberRole: List<MemberRole>? = null
@@ -49,7 +49,7 @@ class Member(
             name = this.name,
             email = this.email,
             profileImage = this.profileImage,
-            createdDate = this.createdDate
+            createdDate = this.createdDate,
         )
 
     fun toDto(profileImageBase64: String?): MemberDtoResponse =

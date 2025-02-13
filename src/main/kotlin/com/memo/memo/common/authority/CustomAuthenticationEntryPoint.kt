@@ -12,7 +12,7 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
     override fun commence(
         request: HttpServletRequest?,
         response: HttpServletResponse,
-        authException: AuthenticationException?
+        authException: AuthenticationException?,
     ) {
 //        // 리디렉션 URL 설정
 //        val redirectUrl = "/api/member/login"
@@ -24,6 +24,5 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
 //
         // 401 상태 코드와 메시지를 클라이언트로 전송
         response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized: Token has expired.")
-
     }
 }

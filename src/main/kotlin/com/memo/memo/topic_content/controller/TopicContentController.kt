@@ -2,7 +2,6 @@ package com.memo.memo.topic_content.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
-import com.memo.memo.content.dto.ContentDtoResponse
 import com.memo.memo.topic_content.dto.TopicContentRequestDto
 import com.memo.memo.topic_content.dto.TopicContentResponseDto
 import com.memo.memo.topic_content.dto.TopicDto
@@ -22,24 +21,26 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/topic-content")
 class TopicContentController(
-    private val topicContentService: TopicContentService
+    private val topicContentService: TopicContentService,
 ) {
     @PostMapping("/new")
     fun createTopicContent(
-        @RequestBody topicContentRequestDto: TopicContentRequestDto
+        @RequestBody topicContentRequestDto: TopicContentRequestDto,
     ): BaseResponse<TopicDto> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = topicContentService.createTopicContent(userId, topicContentRequestDto))
     }
 
     @PutMapping("/edit")
     fun updateTopicContent(
-        @RequestBody topicContentRequestDto: TopicContentRequestDto
+        @RequestBody topicContentRequestDto: TopicContentRequestDto,
     ): BaseResponse<TopicDto> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = topicContentService.updateTopicContent(userId, topicContentRequestDto))
     }
@@ -65,10 +66,11 @@ class TopicContentController(
     fun getAllTopicContentsByMemberAndTopic(
         @PathVariable topicId: Long,
         @RequestParam(defaultValue = "0") page: Int, // 기본값 0번째 페이지
-        @RequestParam(defaultValue = "10") size: Int // 기본값 10개의 항목
+        @RequestParam(defaultValue = "10") size: Int, // 기본값 10개의 항목
     ): BaseResponse<Page<TopicContentResponseDto>> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = topicContentService.getAllTopicContentsByMemberAndTopic(userId, topicId, page, size))
     }
@@ -81,12 +83,12 @@ class TopicContentController(
         @PathVariable topicId: Long,
         @RequestParam keyword: String,
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "10") size: Int // 기본값 10개의 항목
+        @RequestParam(defaultValue = "10") size: Int, // 기본값 10개의 항목
     ): BaseResponse<Page<TopicContentResponseDto>> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = topicContentService.searchTopicContentByKeyword(userId, topicId, keyword, page, size))
     }
-
 }

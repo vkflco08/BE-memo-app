@@ -14,16 +14,20 @@ annotation class ValidEnum(
     val message: String = "Invalid enum value",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = [],
-    val enumClass: KClass<out Enum<*>>
+    val enumClass: KClass<out Enum<*>>,
 )
+
 class ValidEnumValidator : ConstraintValidator<ValidEnum, Any> {
     private lateinit var enumValues: Array<out Enum<*>>
+
     override fun initialize(annotation: ValidEnum) {
         enumValues = annotation.enumClass.java.enumConstants
     }
+
     override fun isValid(
         value: Any?,
-        context: ConstraintValidatorContext): Boolean {
+        context: ConstraintValidatorContext,
+    ): Boolean {
         if (value == null) {
             return true
         }

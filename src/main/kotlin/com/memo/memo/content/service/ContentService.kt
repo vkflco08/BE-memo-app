@@ -30,8 +30,9 @@ class ContentService(
      */
     @Transactional
     fun saveMemo(contentDtoRequest: ContentDtoRequest): String {
-        val findMember: Member = memberRepository.findByIdOrNull(contentDtoRequest.memberId)
-            ?: return "유저를 찾을 수 없습니다."
+        val findMember: Member =
+            memberRepository.findByIdOrNull(contentDtoRequest.memberId)
+                ?: return "유저를 찾을 수 없습니다."
 
         // 같은 날짜의 메모를 찾기
         val existingContent: Content? = contentRepository.findByMemberAndDate(findMember, contentDtoRequest.date)
@@ -53,9 +54,14 @@ class ContentService(
     /**
      * 전체 메모 불러오기 (페이징 적용)
      */
-    fun getMemos(userId: Long, page: Int, size: Int): Page<ContentDtoResponse> {
-        val findMember: Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+    fun getMemos(
+        userId: Long,
+        page: Int,
+        size: Int,
+    ): Page<ContentDtoResponse> {
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
 
         // PageRequest를 사용하여 페이지와 크기를 설정합니다.
         val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
@@ -66,7 +72,7 @@ class ContentService(
             ContentDtoResponse(
                 title = content.title,
                 content = content.content,
-                date = content.date
+                date = content.date,
             )
         }
     }
@@ -74,9 +80,13 @@ class ContentService(
     /**
      * 특정 달에 해당하는 메모 리턴
      */
-    fun getMemosByMonth(userId: Long, yearMonth: String): List<ContentDtoResponse> {
-        val findMember: Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+    fun getMemosByMonth(
+        userId: Long,
+        yearMonth: String,
+    ): List<ContentDtoResponse> {
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
 
         // 연월(YYYY-MM)에 맞는 메모 조회
         val findMemos: List<Content> = contentRepository.findAllByMemberAndYearMonth(findMember, yearMonth)
@@ -85,7 +95,7 @@ class ContentService(
             ContentDtoResponse(
                 title = content.title,
                 content = content.content,
-                date = content.date
+                date = content.date,
             )
         }
     }
@@ -93,11 +103,16 @@ class ContentService(
     /**
      * 특정 날짜 메모 불러오기
      */
-    fun getMemo(userId: Long, date: String): ContentDtoResponse? {
-        val findMember : Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
-        val findMemo = contentRepository.findByMemberAndDate(findMember, date)
-            ?: return null
+    fun getMemo(
+        userId: Long,
+        date: String,
+    ): ContentDtoResponse? {
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+        val findMemo =
+            contentRepository.findByMemberAndDate(findMember, date)
+                ?: return null
         return findMemo.toDto()
     }
 
@@ -105,9 +120,13 @@ class ContentService(
      * 메모 삭제하기
      */
     @Transactional
-    fun removeMemo(userId: Long, date: String): String {
-        val findMember : Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+    fun removeMemo(
+        userId: Long,
+        date: String,
+    ): String {
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         contentRepository.deleteByMemberAndDate(findMember, date)
         return "메모가 정상적으로 삭제되었습니다."
     }
@@ -117,8 +136,9 @@ class ContentService(
      */
     @Transactional
     fun editMemo(contentDtoRequest: ContentDtoRequest): String {
-        val findMember = memberRepository.findByIdOrNull(contentDtoRequest.id)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+        val findMember =
+            memberRepository.findByIdOrNull(contentDtoRequest.id)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
         val existingContent = contentRepository.findByMemberAndDate(findMember, contentDtoRequest.date)
 
         return if (existingContent != null) {
@@ -135,9 +155,15 @@ class ContentService(
     /**
      * 메모 검색하기
      */
-    fun searchContentByKeyword(userId: Long, keyword: String, page: Int, size: Int): Page<ContentDtoResponse> {
-        val findMember: Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+    fun searchContentByKeyword(
+        userId: Long,
+        keyword: String,
+        page: Int,
+        size: Int,
+    ): Page<ContentDtoResponse> {
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
 
         val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
         val contents = contentRepository.searchByMemberAndKeyword(findMember, keyword, pageable)
@@ -146,15 +172,16 @@ class ContentService(
         return contents.map { it.toDto() }
     }
 
-    /*====================================*/
+    // ====================================
 
     /**
      * 유저노트 저장
      */
     @Transactional
     fun saveUsernote(userNoteDto: UserNoteDto): String {
-        val findMember: Member = memberRepository.findByIdOrNull(userNoteDto.memberId)
-            ?: return "유저를 찾을 수 없습니다."
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userNoteDto.memberId)
+                ?: return "유저를 찾을 수 없습니다."
 
         // 같은 날짜의 메모를 찾기
         val existingUsernote: UserNote? = usernoteRepository.findByMember(findMember)
@@ -176,10 +203,12 @@ class ContentService(
      * 유저노트 불러오기
      */
     fun getUsernote(userId: Long): UserNoteDto? {
-        val findMember : Member = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
-        val findMemo = usernoteRepository.findByMember(findMember)
-            ?: return null
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+        val findMemo =
+            usernoteRepository.findByMember(findMember)
+                ?: return null
         return findMemo.toDto()
     }
 }

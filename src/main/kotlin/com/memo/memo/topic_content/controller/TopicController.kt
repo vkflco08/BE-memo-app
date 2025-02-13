@@ -18,34 +18,41 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/topic")
 class TopicController(
-    private val topicService: TopicService
+    private val topicService: TopicService,
 ) {
     @PostMapping("/new/{topicName}")
-    fun createTopic(@PathVariable topicName: String): BaseResponse<Long> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+    fun createTopic(
+        @PathVariable topicName: String,
+    ): BaseResponse<Long> {
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = topicService.createTopic(userId, topicName))
     }
 
     @PutMapping("/edit")
-    fun updateTopic(@RequestBody topicRequestDto: TopicDto): BaseResponse<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+    fun updateTopic(
+        @RequestBody topicRequestDto: TopicDto,
+    ): BaseResponse<Unit> {
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(message = topicService.updateTopic(userId, topicRequestDto))
     }
 
     @DeleteMapping("/delete/{topicId}")
-    fun deleteTopic(@PathVariable topicId: Long): BaseResponse<Unit> {
-        return BaseResponse(message = topicService.deleteTopic(topicId))
-    }
+    fun deleteTopic(
+        @PathVariable topicId: Long,
+    ): BaseResponse<Unit> = BaseResponse(message = topicService.deleteTopic(topicId))
 
     // 주제번호 제목 갯수
     @GetMapping("/list")
     fun getTopicsWithContentCountByMember(): BaseResponse<List<TopicResponseDto>> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = topicService.getTopicsWithContentCountByMember(userId))
     }

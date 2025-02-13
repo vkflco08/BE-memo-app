@@ -12,7 +12,6 @@ import org.springframework.web.filter.GenericFilterBean
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
 ) : GenericFilterBean() {
-
     private val logger = LoggerFactory.getLogger(JwtAuthenticationFilter::class.java)
 
     override fun doFilter(
@@ -21,16 +20,18 @@ class JwtAuthenticationFilter(
         chain: FilterChain?,
     ) {
         val token = resolveToken(request as HttpServletRequest)
-        if(token != null){
-            logger.info("JWT Token found: $token")
-            if(jwtTokenProvider.validateToken(token)){
-                val authentication = jwtTokenProvider.getAuthentication(token)
-                logger.info("Authenticated user: ${authentication.name}, authorities: ${authentication.authorities}")
-                SecurityContextHolder.getContext().authentication = authentication
+        if (token != null)
+            {
+                logger.info("JWT Token found: $token")
+                if (jwtTokenProvider.validateToken(token))
+                    {
+                        val authentication = jwtTokenProvider.getAuthentication(token)
+                        logger.info("Authenticated user: ${authentication.name}, authorities: ${authentication.authorities}")
+                        SecurityContextHolder.getContext().authentication = authentication
+                    } else {
+                    logger.info("Invalid JWT token")
+                }
             } else {
-                logger.info("Invalid JWT token")
-            }
-        } else {
             logger.info("No JWT token found in request headers")
         }
         chain?.doFilter(request, response)
@@ -39,10 +40,9 @@ class JwtAuthenticationFilter(
     private fun resolveToken(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
 
-        return if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer"))
-            {
-                bearerToken.substring(7) // 뒤에 있는 키값만 가져옴
-            } else {
+        return if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            bearerToken.substring(7) // 뒤에 있는 키값만 가져옴
+        } else {
             null
         }
     }

@@ -21,17 +21,17 @@ data class TopicContentRequestDto(
     val contentId: Long?,
     val title: String,
     val content: String,
-){
+) {
     fun toEntity(
         member: Member?,
         topic: Topic,
-    ): TopicContent
-            = TopicContent(
-        title = title,
-        content = content,
-        member = member,
-        topic = topic,
-    )
+    ): TopicContent =
+        TopicContent(
+            title = title,
+            content = content,
+            member = member,
+            topic = topic,
+        )
 }
 
 data class TopicContentResponseDto(
@@ -40,4 +40,3 @@ data class TopicContentResponseDto(
     val content: String? = null,
     val date: LocalDateTime? = null,
 )
-

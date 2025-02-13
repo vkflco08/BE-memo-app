@@ -7,7 +7,6 @@ import com.memo.memo.content.dto.ContentDtoResponse
 import com.memo.memo.content.dto.UserNoteDto
 import com.memo.memo.content.service.ContentService
 import jakarta.validation.Valid
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -32,8 +31,9 @@ class ContentController(
     fun saveMemo(
         @RequestBody @Valid contentDtoRequest: ContentDtoRequest,
     ): BaseResponse<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         contentDtoRequest.memberId = userId
         val resultMsg: String = contentService.saveMemo(contentDtoRequest)
         return BaseResponse(message = resultMsg)
@@ -42,14 +42,15 @@ class ContentController(
     /**
      * 전체 메모 불러오기 (페이징 적용)
      */
+    //    @Cacheable(value = ["memos"], key = "#page + '-' + #size")
     @GetMapping("/all")
-//    @Cacheable(value = ["memos"], key = "#page + '-' + #size")
     fun getMemos(
         @RequestParam(defaultValue = "0") page: Int, // 기본값 0번째 페이지
-        @RequestParam(defaultValue = "10") size: Int // 기본값 10개의 항목
+        @RequestParam(defaultValue = "10") size: Int, // 기본값 10개의 항목
     ): BaseResponse<Page<ContentDtoResponse>> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         val resultMsg: Page<ContentDtoResponse> = contentService.getMemos(userId, page, size)
         return BaseResponse(data = resultMsg)
@@ -59,13 +60,14 @@ class ContentController(
      * 달에 해당하는 메모 리턴
      * @param yearMonth YYYY-MM
      */
+    //    @Cacheable(value = ["memosByMonth"], key = "#yearMonth") // 캐시 이름은 "memosByMonth", key는 yearMonth로 설정
     @GetMapping("/memos/{yearMonth}")
-//    @Cacheable(value = ["memosByMonth"], key = "#yearMonth") // 캐시 이름은 "memosByMonth", key는 yearMonth로 설정
     fun getMemosByMonth(
-        @PathVariable yearMonth: String
+        @PathVariable yearMonth: String,
     ): BaseResponse<List<ContentDtoResponse>> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         val resultMsg: List<ContentDtoResponse> = contentService.getMemosByMonth(userId, yearMonth)
         return BaseResponse(data = resultMsg)
@@ -76,9 +78,12 @@ class ContentController(
      * @param date 메모 날짜
      */
     @GetMapping("/{date}")
-    fun getMemo(@PathVariable date: String): BaseResponse<ContentDtoResponse?> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+    fun getMemo(
+        @PathVariable date: String,
+    ): BaseResponse<ContentDtoResponse?> {
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         val resultMsg: ContentDtoResponse? = contentService.getMemo(userId, date)
         return BaseResponse(data = resultMsg)
     }
@@ -88,9 +93,12 @@ class ContentController(
      * @param date 메모 날짜
      */
     @DeleteMapping("/{date}")
-    fun removeMemo(@PathVariable date: String): BaseResponse<Unit?> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+    fun removeMemo(
+        @PathVariable date: String,
+    ): BaseResponse<Unit?> {
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         val resultMsg: String = contentService.removeMemo(userId, date)
         return BaseResponse(message = resultMsg)
     }
@@ -102,8 +110,9 @@ class ContentController(
     fun saveMyInfo(
         @RequestBody @Valid contentDtoRequest: ContentDtoRequest,
     ): BaseResponse<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         contentDtoRequest.id = userId
         val resultMsg: String = contentService.editMemo(contentDtoRequest)
         return BaseResponse(message = resultMsg)
@@ -116,10 +125,11 @@ class ContentController(
     fun searchContents(
         @RequestParam keyword: String,
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "10") size: Int // 기본값 10개의 항목
+        @RequestParam(defaultValue = "10") size: Int, // 기본값 10개의 항목
     ): BaseResponse<Page<ContentDtoResponse>> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         return BaseResponse(data = contentService.searchContentByKeyword(userId, keyword, page, size))
     }
@@ -131,18 +141,20 @@ class ContentController(
     fun saveUsernote(
         @RequestBody userNoteDto: UserNoteDto,
     ): BaseResponse<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         userNoteDto.memberId = userId
         val resultMsg: String = contentService.saveUsernote(userNoteDto)
         return BaseResponse(message = resultMsg)
     }
 
+    //    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
     @GetMapping("/user_note")
-//    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
     fun getUsernote(): BaseResponse<UserNoteDto?> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         val resultMsg: UserNoteDto? = contentService.getUsernote(userId)
         return BaseResponse(data = resultMsg)

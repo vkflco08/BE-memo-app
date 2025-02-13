@@ -1,7 +1,5 @@
 package com.memo.memo.common.service
 
-import jakarta.transaction.Transactional
-import org.springframework.stereotype.Service
 import com.memo.memo.common.authority.JwtTokenProvider
 import com.memo.memo.common.authority.TokenInfo
 import com.memo.memo.common.dto.CustomUser
@@ -10,6 +8,8 @@ import com.memo.memo.common.entity.MemberRefreshToken
 import com.memo.memo.common.exception.InvalidInputException
 import com.memo.memo.common.repository.MemberRefreshTokenRepository
 import com.memo.memo.member.entity.Member
+import jakarta.transaction.Transactional
+import org.springframework.stereotype.Service
 
 @Service
 class SignService(
@@ -27,7 +27,7 @@ class SignService(
         if (existingToken != null) {
             // 기존 토큰이 존재하면 업데이트
             existingToken.refreshToken = refreshToken
-            memberRefreshTokenRepository.save(existingToken)  // 업데이트된 토큰 저장
+            memberRefreshTokenRepository.save(existingToken) // 업데이트된 토큰 저장
         } else {
             // 기존 토큰이 없으면 새로 저장
             memberRefreshTokenRepository.save(MemberRefreshToken(member, refreshToken))
@@ -42,8 +42,9 @@ class SignService(
 
         // 사용자 정보 추출
         val authentication = jwtTokenProvider.getAuthentication(tokenDtoRequest.refreshToken)
-        val userId : Long = (authentication.principal as CustomUser).userId
-            ?: throw InvalidInputException("유저의 아이디가 null일 수 없습니다.")
+        val userId: Long =
+            (authentication.principal as CustomUser).userId
+                ?: throw InvalidInputException("유저의 아이디가 null일 수 없습니다.")
 
         // DB에서 저장된 Refresh Token을 확인
         val storedRefreshToken = memberRefreshTokenRepository.findById(userId).get().refreshToken

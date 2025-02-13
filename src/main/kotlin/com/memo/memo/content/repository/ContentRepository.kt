@@ -10,22 +10,39 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface ContentRepository : JpaRepository<Content, Long> {
-    fun findAllByMember(findMember: Member, pageable: Pageable): Page<Content>
-    fun findByMemberAndDate(member: Member, date: String): Content?
+    fun findAllByMember(
+        findMember: Member,
+        pageable: Pageable,
+    ): Page<Content>
+
+    fun findByMemberAndDate(
+        member: Member,
+        date: String,
+    ): Content?
 
     @Query("SELECT c FROM Content c WHERE c.member = :member AND c.date LIKE CONCAT(:yearMonth, '%')")
-    fun findAllByMemberAndYearMonth(@Param("member") member: Member, @Param("yearMonth") yearMonth: String): List<Content>
-    fun deleteByMemberAndDate(member: Member, date: String)
+    fun findAllByMemberAndYearMonth(
+        @Param("member") member: Member,
+        @Param("yearMonth") yearMonth: String,
+    ): List<Content>
 
-    @Query("SELECT c FROM Content c WHERE c.member = :member AND " +
-            "(c.title LIKE %:keyword% OR c.content LIKE %:keyword%)")
+    fun deleteByMemberAndDate(
+        member: Member,
+        date: String,
+    )
+
+    @Query(
+        "SELECT c FROM Content c WHERE c.member = :member AND " +
+            "(c.title LIKE %:keyword% OR c.content LIKE %:keyword%)",
+    )
     fun searchByMemberAndKeyword(
         @Param("member") member: Member,
         @Param("keyword") keyword: String,
-        pageable: Pageable
+        pageable: Pageable,
     ): Page<Content>
 
     fun countByMemberId(memberId: Long): Int
+
     fun findAllByMemberId(memberId: Long): List<Content>
 }
 

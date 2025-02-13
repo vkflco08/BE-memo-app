@@ -1,6 +1,7 @@
 package com.memo.memo.common.entity
 
 import BaseEntity
+import com.memo.memo.member.entity.Member
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
@@ -9,7 +10,6 @@ import jakarta.persistence.MapsId
 import jakarta.persistence.OneToOne
 import lombok.Getter
 import lombok.Setter
-import com.memo.memo.member.entity.Member
 
 @Entity
 @Getter
@@ -19,8 +19,7 @@ class MemberRefreshToken(
     @MapsId
     @JoinColumn(name = "member_id")
     val member: Member,
-
-    var refreshToken: String
+    var refreshToken: String,
 ) : BaseEntity() {
     @Id
     val memberId: Long? = null

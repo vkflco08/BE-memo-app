@@ -22,9 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfig(
     private val jwtTokenProvider: JwtTokenProvider,
     private val rateLimitFilter: RateLimitFilter,
-    @Value("\${cors.allowed.origins}") private val allowedOrigins: List<String> // List<String>으로 설정
+    @Value("\${cors.allowed.origins}") private val allowedOrigins: List<String>, // List<String>으로 설정
 ) {
-
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -46,17 +45,17 @@ class SecurityConfig(
                     ).hasRole("MEMBER")
                     .requestMatchers(
                         "/uploads/**",
-                        "/favicon.ico").permitAll() // 이미지 제공 URL에 대한 접근 허용
+                        "/favicon.ico",
+                    ).permitAll() // 이미지 제공 URL에 대한 접근 허용
             }
-
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
             .addFilterBefore(
                 rateLimitFilter,
-                SecurityContextHolderAwareRequestFilter::class.java
+                SecurityContextHolderAwareRequestFilter::class.java,
             ) // RateLimitFilter 추가
             .addFilterBefore(
                 JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter::class.java
+                UsernamePasswordAuthenticationFilter::class.java,
             )
             .cors { it.configurationSource(corsConfigurationSource()) }
 

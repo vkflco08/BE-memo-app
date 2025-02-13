@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/statistics")
-class StatisticsController(private val statisticsService: StatisticsService) {
+class StatisticsController(
+    private val statisticsService: StatisticsService,
+) {
     @GetMapping("/member")
     fun getStatistics(): BaseResponse<StatisticsResponseDto> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-            ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
         val probability = statisticsService.calculateMemoCreationProbability(userId)
         val avgTime = statisticsService.calculateAverageMemoCreationTime(userId)

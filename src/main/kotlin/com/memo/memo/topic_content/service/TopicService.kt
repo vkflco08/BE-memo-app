@@ -15,12 +15,16 @@ import org.springframework.transaction.annotation.Transactional
 class TopicService(
     private val topicRepository: TopicRepository,
     private val topicContentRepository: TopicContentRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
 ) {
     @Transactional
-    fun createTopic(userId: Long, topicName: String): Long? {
-        val findMember = memberRepository.findByIdOrNull(userId)
-            ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+    fun createTopic(
+        userId: Long,
+        topicName: String,
+    ): Long? {
+        val findMember =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
 
         val topic = Topic(name = topicName, member = findMember)
         topicRepository.save(topic)
@@ -30,7 +34,10 @@ class TopicService(
 
     // Topic 수정
     @Transactional
-    fun updateTopic(userId: Long, topicRequestDto: TopicDto): String {
+    fun updateTopic(
+        userId: Long,
+        topicRequestDto: TopicDto,
+    ): String {
         val findTopic = topicRepository.findByIdOrNull(topicRequestDto.topicId)
 
         return if (findTopic != null) {
@@ -53,13 +60,14 @@ class TopicService(
     // 특정 멤버가 작성한 모든 Topic과 각 Topic에 속한 메모 개수 조회
     @Transactional(readOnly = true)
     fun getTopicsWithContentCountByMember(memberId: Long): List<TopicResponseDto> {
-        val findMember = memberRepository.findByIdOrNull(memberId)
-            ?: throw InvalidInputException("유저를 찾을 수 없습니다.")
+        val findMember =
+            memberRepository.findByIdOrNull(memberId)
+                ?: throw InvalidInputException("유저를 찾을 수 없습니다.")
         return topicRepository.findByMemberId(memberId).map { topic ->
             TopicResponseDto(
                 topicId = topic.id,
                 topicName = topic.name,
-                contentNum = topicContentRepository.countByMemberAndTopic(findMember, topic)
+                contentNum = topicContentRepository.countByMemberAndTopic(findMember, topic),
             )
         }
     }
