@@ -135,16 +135,44 @@ class ContentController(
     }
 
     /**
-     * 유저 노트
+     * 유저 노트 전체저장
+     */
+    @PostMapping("/user_notes")
+    fun saveUsernotes(
+        @RequestBody userNoteDto: List<UserNoteDto>,
+    ): BaseResponse<Unit> {
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val resultMsg: String = contentService.saveUsernotes(userNoteDto, userId)
+        return BaseResponse(message = resultMsg)
+    }
+
+    /**
+     * 유저 노트 저장
      */
     @PostMapping("/user_note")
     fun saveUsernote(
-        @RequestBody userNoteDto: List<UserNoteDto>,
+        @RequestBody userNoteDto: UserNoteDto,
     ): BaseResponse<Unit> {
-        val userid =
+        val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: String = contentService.saveUsernote(userNoteDto, userid)
+        val resultMsg: String = contentService.saveUsernote(userNoteDto, userId)
+        return BaseResponse(message = resultMsg)
+    }
+
+    /**
+     * 유저 노트 삭제
+     */
+    @DeleteMapping("/user_note/{noteId}")
+    fun deleteUsernote(
+        @PathVariable noteId: Long,
+    ): BaseResponse<Unit> {
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+        val resultMsg: String = contentService.deleteUsernote(noteId, userId)
         return BaseResponse(message = resultMsg)
     }
 

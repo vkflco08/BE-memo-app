@@ -12,8 +12,6 @@ import com.memo.memo.member.entity.Member
 import com.memo.memo.member.repository.MemberRepository
 import jakarta.transaction.Transactional
 import lombok.extern.slf4j.Slf4j
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -177,13 +175,11 @@ class ContentService(
 
     // ====================================
 
-    private val log: Logger = LoggerFactory.getLogger(ContentService::class.java)
-
     /**
-     * 유저노트 저장
+     * 유저노트 전체 저장
      */
     @Transactional
-    fun saveUsernote(
+    fun saveUsernotes(
         userNoteDto: List<UserNoteDto>,
         userId: Long,
     ): String {
@@ -214,6 +210,38 @@ class ContentService(
     }
 
     /**
+     * 유저노트 저장
+     */
+    @Transactional
+    fun saveUsernote(
+        userNoteDto: UserNoteDto,
+        userId: Long,
+    ): String {
+        // 저장된 메모 수정
+        if (userNoteDto.id != null) {
+            val findUserNote =
+                usernoteRepository.findByIdOrNull(userNoteDto.id)
+                    ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+
+            if (findUserNote.member.id == userId) {
+                findUserNote.title = userNoteDto.title.toString()
+                findUserNote.content = userNoteDto.content
+
+                return "메모가 업데이트되었습니다."
+            } else {
+                throw InvalidInputException("잘못된 접근입니다.")
+            }
+        } else {
+            val findMember =
+                memberRepository.findByIdOrNull(userId)
+                    ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+
+            usernoteRepository.save(userNoteDto.toEntity(findMember))
+            return "메모가 저장되었습니다."
+        }
+    }
+
+    /**
      * 유저노트 불러오기
      */
     fun getUsernote(userId: Long): List<UserNoteDto>? {
@@ -224,5 +252,29 @@ class ContentService(
             usernoteRepository.findAllByMember(findMember)
                 ?: return null
         return findMemo.map { entity -> entity.toDto() }
+    }
+
+    @Transactional
+    fun deleteUsernote(
+        noteId: Long,
+        userId: Long,
+    ): String {
+        val findUserNote =
+            usernoteRepository.findByIdOrNull(noteId)
+                ?: throw InvalidInputException("존재하지 않는 메모입니다.")
+
+        if (findUserNote.member.id == userId) {
+            usernoteRepository.delete(findUserNote)
+            // 삭제 후 다시 조회하여 확인
+            val deletedNote = usernoteRepository.findByIdOrNull(noteId)
+
+            return if (deletedNote == null) {
+                "메모가 삭제되었습니다."
+            } else {
+                "메모 삭제에 실패했습니다."
+            }
+        } else {
+            throw InvalidInputException("잘못된 접근입니다.")
+        }
     }
 }

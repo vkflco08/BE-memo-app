@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import java.util.*
 
 interface ContentRepository : JpaRepository<Content, Long> {
     fun findAllByMember(
@@ -47,9 +48,5 @@ interface ContentRepository : JpaRepository<Content, Long> {
 }
 
 interface UserNoteRepository : JpaRepository<UserNote, Long> {
-    fun findByMember(findMember: Member): UserNote?
-
     fun findAllByMember(findMember: Member): List<UserNote>?
-
-    fun deleteAllByMember(findMember: Member)
 }
