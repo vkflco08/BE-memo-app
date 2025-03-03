@@ -42,7 +42,7 @@ class TopicController(
         return BaseResponse(message = topicService.updateTopic(userId, topicRequestDto))
     }
 
-    @DeleteMapping("/delete/{topicId}")
+    @DeleteMapping("/{topicId}")
     fun deleteTopic(
         @PathVariable topicId: Long,
     ): BaseResponse<Unit> = BaseResponse(message = topicService.deleteTopic(topicId))

@@ -1,4 +1,5 @@
 package com.memo.memo.topic_content.entity
+
 import BaseEntity
 import com.memo.memo.member.entity.Member
 import jakarta.persistence.Column

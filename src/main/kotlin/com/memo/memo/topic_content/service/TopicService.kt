@@ -7,11 +7,14 @@ import com.memo.memo.topic_content.dto.TopicResponseDto
 import com.memo.memo.topic_content.entity.Topic
 import com.memo.memo.topic_content.repository.TopicContentRepository
 import com.memo.memo.topic_content.repository.TopicRepository
+import lombok.extern.slf4j.Slf4j
+import org.hibernate.query.sqm.tree.SqmNode.log
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Slf4j
 class TopicService(
     private val topicRepository: TopicRepository,
     private val topicContentRepository: TopicContentRepository,
@@ -53,6 +56,7 @@ class TopicService(
     // Topic 삭제
     @Transactional
     fun deleteTopic(topidId: Long): String {
+        log.info("topic 삭제 시작")
         topicRepository.deleteById(topidId)
         return "주제가 정상적으로 삭제되었습니다."
     }
