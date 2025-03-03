@@ -1,9 +1,8 @@
-package com.memo.memo.content.entity
+package com.memo.memo.usernote.entity
 
 import BaseEntity
-import com.memo.memo.content.dto.ContentDtoResponse
-import com.memo.memo.content.dto.UserNoteDto
 import com.memo.memo.member.entity.Member
+import com.memo.memo.usernote.dto.UserNoteDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -15,26 +14,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import lombok.Getter
-
-@Entity
-@Getter
-class Content(
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null,
-    @Column(nullable = false, length = 30)
-    var title: String,
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
-    var content: String,
-    @Column(nullable = false, length = 30)
-    val date: String,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = ForeignKey(name = "fk_content_member_id"))
-    val member: Member,
-) : BaseEntity() {
-    fun toDto(): ContentDtoResponse = ContentDtoResponse(title, content, date)
-}
 
 @Entity
 @Getter

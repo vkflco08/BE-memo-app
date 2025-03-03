@@ -2,8 +2,8 @@ package com.memo.memo.member.entity
 
 import BaseEntity
 import com.memo.memo.common.status.ROLE
-import com.memo.memo.content.entity.UserNote
 import com.memo.memo.member.dto.MemberDtoResponse
+import com.memo.memo.usernote.entity.UserNote
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

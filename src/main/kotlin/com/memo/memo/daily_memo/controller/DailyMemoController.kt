@@ -1,11 +1,10 @@
-package com.memo.memo.content.controller
+package com.memo.memo.daily_memo.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
-import com.memo.memo.content.dto.ContentDtoRequest
-import com.memo.memo.content.dto.ContentDtoResponse
-import com.memo.memo.content.dto.UserNoteDto
-import com.memo.memo.content.service.ContentService
+import com.memo.memo.daily_memo.dto.ContentDtoRequest
+import com.memo.memo.daily_memo.dto.ContentDtoResponse
+import com.memo.memo.daily_memo.service.DailyMemoService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.security.core.context.SecurityContextHolder
@@ -21,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/memo")
-class ContentController(
-    private val contentService: ContentService,
+class DailyMemoController(
+    private val dailyMemoService: DailyMemoService,
 ) {
     /**
      * 메모 저장
@@ -35,7 +34,7 @@ class ContentController(
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         contentDtoRequest.memberId = userId
-        val resultMsg: String = contentService.saveMemo(contentDtoRequest)
+        val resultMsg: String = dailyMemoService.saveMemo(contentDtoRequest)
         return BaseResponse(message = resultMsg)
     }
 
@@ -52,7 +51,7 @@ class ContentController(
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        val resultMsg: Page<ContentDtoResponse> = contentService.getMemos(userId, page, size)
+        val resultMsg: Page<ContentDtoResponse> = dailyMemoService.getMemos(userId, page, size)
         return BaseResponse(data = resultMsg)
     }
 
@@ -69,7 +68,7 @@ class ContentController(
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        val resultMsg: List<ContentDtoResponse> = contentService.getMemosByMonth(userId, yearMonth)
+        val resultMsg: List<ContentDtoResponse> = dailyMemoService.getMemosByMonth(userId, yearMonth)
         return BaseResponse(data = resultMsg)
     }
 
@@ -84,7 +83,7 @@ class ContentController(
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: ContentDtoResponse? = contentService.getMemo(userId, date)
+        val resultMsg: ContentDtoResponse? = dailyMemoService.getMemo(userId, date)
         return BaseResponse(data = resultMsg)
     }
 
@@ -99,7 +98,7 @@ class ContentController(
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: String = contentService.removeMemo(userId, date)
+        val resultMsg: String = dailyMemoService.removeMemo(userId, date)
         return BaseResponse(message = resultMsg)
     }
 
@@ -114,7 +113,7 @@ class ContentController(
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
         contentDtoRequest.id = userId
-        val resultMsg: String = contentService.editMemo(contentDtoRequest)
+        val resultMsg: String = dailyMemoService.editMemo(contentDtoRequest)
         return BaseResponse(message = resultMsg)
     }
 
@@ -131,59 +130,6 @@ class ContentController(
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
 
-        return BaseResponse(data = contentService.searchContentByKeyword(userId, keyword, page, size))
-    }
-
-    /**
-     * 유저 노트 전체저장
-     */
-    @PostMapping("/user_notes")
-    fun saveUsernotes(
-        @RequestBody userNoteDto: List<UserNoteDto>,
-    ): BaseResponse<Unit> {
-        val userId =
-            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: String = contentService.saveUsernotes(userNoteDto, userId)
-        return BaseResponse(message = resultMsg)
-    }
-
-    /**
-     * 유저 노트 저장
-     */
-    @PostMapping("/user_note")
-    fun saveUsernote(
-        @RequestBody userNoteDto: UserNoteDto,
-    ): BaseResponse<Unit> {
-        val userId =
-            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: String = contentService.saveUsernote(userNoteDto, userId)
-        return BaseResponse(message = resultMsg)
-    }
-
-    /**
-     * 유저 노트 삭제
-     */
-    @DeleteMapping("/user_note/{noteId}")
-    fun deleteUsernote(
-        @PathVariable noteId: Long,
-    ): BaseResponse<Unit> {
-        val userId =
-            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: String = contentService.deleteUsernote(noteId, userId)
-        return BaseResponse(message = resultMsg)
-    }
-
-    //    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
-    @GetMapping("/user_note")
-    fun getUsernote(): BaseResponse<List<UserNoteDto>?> {
-        val userId =
-            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-
-        val resultMsg: List<UserNoteDto>? = contentService.getUsernote(userId)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse(data = dailyMemoService.searchContentByKeyword(userId, keyword, page, size))
     }
 }

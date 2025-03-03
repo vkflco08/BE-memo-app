@@ -31,14 +31,16 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it.requestMatchers(
-                    "/api/member/signup",
-                    "/api/member/login",
-                    "/api/auth/refresh",
-                ).anonymous()
+                it
+                    .requestMatchers(
+                        "/api/member/signup",
+                        "/api/member/login",
+                        "/api/auth/refresh",
+                    ).anonymous()
                     .requestMatchers(
                         "/api/member/**",
                         "/api/memo/**",
+                        "/api/user_note/**",
                         "/api/statistics/**",
                         "/api/topic/**",
                         "/api/topic-content/**",
@@ -47,8 +49,7 @@ class SecurityConfig(
                         "/uploads/**",
                         "/favicon.ico",
                     ).permitAll() // 이미지 제공 URL에 대한 접근 허용
-            }
-            .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
+            }.exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint()) }
             .addFilterBefore(
                 rateLimitFilter,
                 SecurityContextHolderAwareRequestFilter::class.java,
@@ -56,16 +57,13 @@ class SecurityConfig(
             .addFilterBefore(
                 JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter::class.java,
-            )
-            .cors { it.configurationSource(corsConfigurationSource()) }
+            ).cors { it.configurationSource(corsConfigurationSource()) }
 
         return http.build()
     }
 
     @Bean
-    fun customAuthenticationEntryPoint(): AuthenticationEntryPoint {
-        return CustomAuthenticationEntryPoint()
-    }
+    fun customAuthenticationEntryPoint(): AuthenticationEntryPoint = CustomAuthenticationEntryPoint()
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()

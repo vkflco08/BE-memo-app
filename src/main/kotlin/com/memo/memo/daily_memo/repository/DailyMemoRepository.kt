@@ -1,31 +1,29 @@
-package com.memo.memo.content.repository
+package com.memo.memo.daily_memo.repository
 
-import com.memo.memo.content.entity.Content
-import com.memo.memo.content.entity.UserNote
+import com.memo.memo.daily_memo.entity.DailyMemo
 import com.memo.memo.member.entity.Member
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.*
 
-interface ContentRepository : JpaRepository<Content, Long> {
+interface DailyMemoRepository : JpaRepository<DailyMemo, Long> {
     fun findAllByMember(
         findMember: Member,
         pageable: Pageable,
-    ): Page<Content>
+    ): Page<DailyMemo>
 
     fun findByMemberAndDate(
         member: Member,
         date: String,
-    ): Content?
+    ): DailyMemo?
 
-    @Query("SELECT c FROM Content c WHERE c.member = :member AND c.date LIKE CONCAT(:yearMonth, '%')")
+    @Query("SELECT c FROM DailyMemo c WHERE c.member = :member AND c.date LIKE CONCAT(:yearMonth, '%')")
     fun findAllByMemberAndYearMonth(
         @Param("member") member: Member,
         @Param("yearMonth") yearMonth: String,
-    ): List<Content>
+    ): List<DailyMemo>
 
     fun deleteByMemberAndDate(
         member: Member,
@@ -33,20 +31,16 @@ interface ContentRepository : JpaRepository<Content, Long> {
     )
 
     @Query(
-        "SELECT c FROM Content c WHERE c.member = :member AND " +
+        "SELECT c FROM DailyMemo c WHERE c.member = :member AND " +
             "(c.title LIKE %:keyword% OR c.content LIKE %:keyword%)",
     )
     fun searchByMemberAndKeyword(
         @Param("member") member: Member,
         @Param("keyword") keyword: String,
         pageable: Pageable,
-    ): Page<Content>
+    ): Page<DailyMemo>
 
     fun countByMemberId(memberId: Long): Int
 
-    fun findAllByMemberId(memberId: Long): List<Content>
-}
-
-interface UserNoteRepository : JpaRepository<UserNote, Long> {
-    fun findAllByMember(findMember: Member): List<UserNote>?
+    fun findAllByMemberId(memberId: Long): List<DailyMemo>
 }
