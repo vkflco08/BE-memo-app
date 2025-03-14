@@ -52,12 +52,13 @@ class UserNoteController(
     @DeleteMapping("/{noteId}")
     fun deleteUsernote(
         @PathVariable noteId: Long,
-    ): BaseResponse<Unit> {
+    ): BaseResponse<List<UserNoteDto>?> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
                 ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
-        val resultMsg: String = userNoteService.deleteUserNote(noteId, userId)
-        return BaseResponse(message = resultMsg)
+        userNoteService.deleteUserNote(noteId, userId)
+        val resultMsg: List<UserNoteDto>? = userNoteService.getUserNote(userId)
+        return BaseResponse(data = resultMsg)
     }
 
     //    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
