@@ -94,27 +94,38 @@ class UserNoteService(
         return findMemo.map { entity -> entity.toDto() }
     }
 
+    /**
+     * 주어진 사용자 ID에 대한 노트를 삭제하고, 삭제된 후의 노트 리스트를 반환하는 함수입니다.
+     *
+     * @param noteId 삭제할 노트의 ID
+     * @param userId 노트를 삭제할 사용자의 ID
+     * @return 삭제된 후의 노트 리스트 (UserNoteDto 형태로 반환)
+     * @throws InvalidInputException 해당 노트가 없거나, 삭제할 수 없는 노트일 경우 예외 발생
+     */
     @Transactional
     fun deleteUserNote(
         noteId: Long,
         userId: Long,
-    ): String {
+    ): List<UserNoteDto>? {
+        val findMember: Member =
+            memberRepository.findByIdOrNull(userId)
+                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+
         val findUserNote =
-            userNoteRepository.findByIdOrNull(noteId)
-                ?: throw InvalidInputException("존재하지 않는 메모입니다.")
+            userNoteRepository.findAllByMember(findMember)
+                ?: throw InvalidInputException("회원의 유저노트가 없습니다.")
 
-        if (findUserNote.member.id == userId) {
-            userNoteRepository.delete(findUserNote)
-            // 삭제 후 다시 조회하여 확인
-            val deletedNote = userNoteRepository.findByIdOrNull(noteId)
+        // 삭제할 노트 찾기
+        val noteToDelete =
+            findUserNote.find { it.id == noteId }
+                ?: throw InvalidInputException("해당 노트를 찾을 수 없습니다.")
 
-            return if (deletedNote == null) {
-                "메모가 삭제되었습니다."
-            } else {
-                "메모 삭제에 실패했습니다."
-            }
-        } else {
-            throw InvalidInputException("잘못된 접근입니다.")
-        }
+        // 노트 삭제
+        userNoteRepository.delete(noteToDelete)
+
+        // 삭제된 노트를 제외한 나머지 노트 리스트 반환
+        val updatedNotes = findUserNote.filter { it.id != noteId }
+
+        return updatedNotes.map { entity -> entity.toDto() }
     }
 }
