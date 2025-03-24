@@ -23,7 +23,7 @@ Redis, MySQL, JWT 기반 인증 및 API Rate Limiting을 적용하여 보안과 
   <br>
   <strong>조승빈</strong>
   <br>
-  Fullstack 개발
+  Backend 개발
   <br>
   🔗 <a href="https://github.com/vkflco08">GitHub 프로필</a>
 </div>
