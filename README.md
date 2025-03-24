@@ -16,10 +16,10 @@ Redis, MySQL, JWT 기반 인증 및 API Rate Limiting을 적용하여 보안과 
 
 ---
 
-## 🧑‍💻 멤버 구성
+## 🧑‍💻 팀원 소개
 | 이름 | 역할 | GitHub |
-|------|------|--------|
-| **[vkflco08]** | Backend 개발 | [GitHub 프로필](https://github.com/vkflco08) |
+|:------:|:------:|:------:|
+| <img src="https://avatars.githubusercontent.com/u/67574367?s=130&v=4" alt="조승빈" width="100"> <br> **조승빈** | BE | [GitHub](https://github.com/vkflco08) |
 
 ---
 
