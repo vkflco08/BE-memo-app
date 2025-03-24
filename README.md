@@ -36,7 +36,9 @@ Redis, MySQL, JWT 기반 인증 및 API Rate Limiting을 적용하여 보안과 
 - **DB**: MySQL  
 - **캐시**: Redis  
 - **배포 방식**: 개인 리눅스 서버에서 Jenkins를 활용하여 Nginx 컨테이너를 배포  
-- **보안**: Spring Security + JWT  
+- **보안**: Spring Security + JWT
+- **프론트엔드**: React (JSX)  
+  - **프론트엔드 GitHub**: [FE-memo-app](https://github.com/vkflco08/FE-memo-app.git)
 
 ---
 
