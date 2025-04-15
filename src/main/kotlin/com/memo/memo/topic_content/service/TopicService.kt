@@ -1,6 +1,7 @@
 package com.memo.memo.topic_content.service
 
-import com.memo.memo.common.exception.InvalidInputException
+import com.memo.memo.common.exception.exceptions.TopicNotFoundException
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.member.repository.MemberRepository
 import com.memo.memo.topic_content.dto.TopicDto
 import com.memo.memo.topic_content.dto.TopicResponseDto
@@ -27,7 +28,7 @@ class TopicService(
     ): Long? {
         val findMember =
             memberRepository.findByIdOrNull(userId)
-                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+                ?: throw UserNotFoundException()
 
         val topic = Topic(name = topicName, member = findMember)
         topicRepository.save(topic)
@@ -49,7 +50,7 @@ class TopicService(
             topicRepository.save(findTopic) // 변경된 내용 저장
             return "수정이 완료되었습니다."
         } else {
-            return "수정할 주제가 존재하지 않습니다."
+            throw TopicNotFoundException()
         }
     }
 
@@ -66,7 +67,7 @@ class TopicService(
     fun getTopicsWithContentCountByMember(memberId: Long): List<TopicResponseDto> {
         val findMember =
             memberRepository.findByIdOrNull(memberId)
-                ?: throw InvalidInputException("유저를 찾을 수 없습니다.")
+                ?: throw UserNotFoundException()
         return topicRepository.findByMemberId(memberId).map { topic ->
             TopicResponseDto(
                 topicId = topic.id,

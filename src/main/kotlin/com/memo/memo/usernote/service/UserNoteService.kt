@@ -1,6 +1,6 @@
 package com.memo.memo.usernote.service
 
-import com.memo.memo.common.exception.InvalidInputException
+import com.memo.memo.common.exception.exceptions.InvalidInputException
 import com.memo.memo.member.entity.Member
 import com.memo.memo.member.repository.MemberRepository
 import com.memo.memo.usernote.dto.UserNoteDto

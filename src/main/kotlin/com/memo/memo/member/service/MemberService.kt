@@ -2,7 +2,8 @@ package com.memo.memo.member.service
 
 import com.memo.memo.common.authority.JwtTokenProvider
 import com.memo.memo.common.authority.TokenInfo
-import com.memo.memo.common.exception.InvalidInputException
+import com.memo.memo.common.exception.exceptions.InvalidInputException
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.common.repository.MemberRefreshTokenRepository
 import com.memo.memo.common.service.SignService
 import com.memo.memo.common.status.ROLE
@@ -72,7 +73,7 @@ class MemberService(
             signService.saveRefreshToken(member, refreshToken)
             return TokenInfo("Bearer", accessToken, refreshToken)
         } else {
-            throw InvalidInputException("유저를 찾을 수 없습니다.")
+            throw UserNotFoundException()
         }
     }
 
@@ -82,7 +83,7 @@ class MemberService(
     fun searchMyInfo(userId: Long?): MemberDtoResponse {
         val member: Member =
             memberRepository.findByIdOrNull(userId)
-                ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
+                ?: throw UserNotFoundException()
 
         val findImage = fileService.getProfileImage(member)
 
@@ -99,7 +100,7 @@ class MemberService(
     ): MemberDtoResponse {
         val existingMember: Member =
             memberRepository.findByIdOrNull(memberProfileDtoRequest.id)
-                ?: throw InvalidInputException("회원 정보가 존재하지 않습니다.")
+                ?: throw UserNotFoundException()
 
         // 프로필 이미지 저장
         profileImage?.let {

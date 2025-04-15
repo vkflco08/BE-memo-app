@@ -1,5 +1,8 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.memo.memo.member.service
 
+import com.memo.memo.common.exception.exceptions.FileUploadException
 import com.memo.memo.member.entity.Member
 import lombok.extern.slf4j.Slf4j
 import org.hibernate.query.sqm.tree.SqmNode.log
@@ -22,6 +25,7 @@ class FileService {
         } catch (e: FileSystemException) {
             // 로그 기록 및 적절한 예외 처리
             log.error("디렉토리를 생성할 수 없습니다: ${e.message}")
+            throw FileUploadException("디렉토리 생성에 실패했습니다: ${e.message}")
         }
     }
 
@@ -29,6 +33,10 @@ class FileService {
         userId: Long?,
         file: MultipartFile,
     ): String {
+        if (userId == null) {
+            throw IllegalArgumentException("사용자 ID가 null입니다.")
+        }
+
         // 유저별 디렉터리 생성 (절대 경로로)
         val userDir = Paths.get(uploadDir, "$userId").toAbsolutePath() // uploadDir은 절대 경로로 설정되어 있다고 가정
         try {
@@ -36,7 +44,7 @@ class FileService {
             Files.createDirectories(userDir)
         } catch (e: FileSystemException) {
             log.error("디렉토리를 생성할 수 없습니다: ${e.message}")
-            throw e
+            throw FileUploadException("파일 저장을 위한 디렉토리 생성에 실패했습니다: ${e.message}")
         }
 
         // 기존 이미지 파일이 존재하는지 확인하고 삭제
@@ -48,6 +56,7 @@ class FileService {
                 log.info("기존 파일을 삭제했습니다: $existingFile")
             } catch (e: Exception) {
                 log.error("기존 파일을 삭제하는 중 오류가 발생했습니다: ${e.message}")
+                throw FileUploadException("기존 파일 삭제에 실패했습니다: ${e.message}")
             }
         }
 
@@ -58,8 +67,13 @@ class FileService {
         // 로그 추가: 파일 경로 출력
         println("파일 경로: $filePath")
 
-        // 파일 저장
-        file.transferTo(filePath.toFile())
+        try {
+            // 파일 저장
+            file.transferTo(filePath.toFile())
+        } catch (e: Exception) {
+            log.error("파일 저장 중 오류가 발생했습니다: ${e.message}")
+            throw FileUploadException("파일 저장에 실패했습니다: ${e.message}")
+        }
 
         return filePath.toString() // 저장된 파일 경로 반환
     }
@@ -73,15 +87,15 @@ class FileService {
     fun getProfileImage(member: Member): String? {
         // 절대 경로로 수정 (여기서는 'uploads' 디렉터리가 프로젝트의 루트에 있다고 가정)
         val profileImagePath = Paths.get(uploadDir, "${member.id}").toAbsolutePath().toString()
-        println("profileImagePath: $profileImagePath") // 경로 확인
+        log.info("profileImagePath: $profileImagePath") // 경로 확인
 
         // 폴더가 존재하는지 확인
         val memberFolder = File(profileImagePath)
-        println("memberFolder: $memberFolder")
-        println("memberFolder.exists(): ${memberFolder.exists()}")
+        log.info("memberFolder: $memberFolder")
+        log.info("memberFolder.exists(): ${memberFolder.exists()}")
         if (!memberFolder.exists() || !memberFolder.isDirectory) {
             // 폴더가 없으면 null 리턴
-            println("프로필 이미지 폴더가 존재하지 않음: $profileImagePath")
+            log.warn("프로필 이미지 폴더가 존재하지 않음: $profileImagePath")
             return null
         }
 
@@ -89,15 +103,15 @@ class FileService {
         val profileImageFile = File(member.profileImage ?: "")
 
         // 이미지 파일이 존재하면 Base64로 인코딩
-        println("profileImageFile: $profileImageFile")
-        println("profileImageFile.exists(): ${profileImageFile.exists()}")
+        log.info("profileImageFile: $profileImageFile")
+        log.info("profileImageFile.exists(): ${profileImageFile.exists()}")
 
         return if (profileImageFile.exists()) {
             println("프로필 이미지 경로: ${profileImageFile.absolutePath}") // 경로 확인
             encodeImageToBase64(profileImageFile.absolutePath)
         } else {
             // 이미지 파일이 없으면 null 리턴
-            println("프로필 이미지 파일이 존재하지 않음: ${profileImageFile.absolutePath}")
+            log.warn("프로필 이미지 파일이 존재하지 않음: ${profileImageFile.absolutePath}")
             null
         }
     }

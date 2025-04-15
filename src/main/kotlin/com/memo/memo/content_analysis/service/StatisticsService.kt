@@ -1,5 +1,6 @@
 package com.memo.memo.content_analysis.service
 
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.content_analysis.dto.MemoAverageCreationStats
 import com.memo.memo.content_analysis.dto.MemoLengthStats
 import com.memo.memo.daily_memo.repository.DailyMemoRepository
@@ -23,7 +24,7 @@ class StatisticsService(
         val member =
             memberRepository
                 .findById(memberId)
-                .orElseThrow { IllegalArgumentException("존재하지 않는 사용자입니다.") }
+                .orElseThrow { UserNotFoundException() }
 
         val totalDays = ChronoUnit.DAYS.between(member.createdDate, LocalDateTime.now()).toDouble()
 
@@ -32,7 +33,12 @@ class StatisticsService(
         }
 
         val memoCount = dailyMemoRepository.countByMemberId(memberId).toDouble()
-        val probability = (memoCount / totalDays) * 100 // 확률을 백분율로 반환
+        val probability =
+            if (totalDays != 0.0) {
+                (memoCount / totalDays) * 100 // 확률을 백분율로 반환
+            } else {
+                0.0
+            }
         logger.info("Calculated probability: {}%", probability)
         return listOf(probability, memoCount)
     }
@@ -41,43 +47,53 @@ class StatisticsService(
     fun calculateAverageMemoCreationTime(memberId: Long): MemoAverageCreationStats {
         logger.info("Calculating average memo creation time for member ID: {}", memberId)
         val memos = dailyMemoRepository.findAllByMemberId(memberId)
+
         if (memos.isEmpty()) {
-            logger.warn("No memos found for member ID: {}, returning default values", memberId)
-            return MemoAverageCreationStats(0.0, 0.0, 0.0, emptyList())
+            throw UserNotFoundException()
         }
 
-        // 메모 생성 시간을 리스트로 추출
-        val creationTimes = memos.map { memo -> memo.createdDate }
+        try {
+            // 메모 생성 시간을 리스트로 추출
+            val creationTimes = memos.map { memo -> memo.createdDate }
 
-        // 시간, 분, 초의 총합 계산
-        val totalHours = creationTimes.sumOf { it!!.hour }
-        val totalMinutes = creationTimes.sumOf { it!!.minute }
-        val totalSeconds = creationTimes.sumOf { it!!.second }
+            // 시간, 분, 초의 총합 계산
+            val totalHours = creationTimes.sumOf { it!!.hour }
+            val totalMinutes = creationTimes.sumOf { it!!.minute }
+            val totalSeconds = creationTimes.sumOf { it!!.second }
 
-        // 각 평균 계산
-        val averageHours = totalHours.toDouble() / memos.size
-        val averageMinutes = totalMinutes.toDouble() / memos.size
-        val averageSeconds = totalSeconds.toDouble() / memos.size
+            // 각 평균 계산
+            val averageHours = totalHours.toDouble() / memos.size
+            val averageMinutes = totalMinutes.toDouble() / memos.size
+            val averageSeconds = totalSeconds.toDouble() / memos.size
 
-        // 생성일 리스트 생성
-        val creationDates = memos.map { memo -> memo.createdDate ?: LocalDateTime.now() } // null 체크
+            // 생성일 리스트 생성
+            val creationDates = memos.map { memo -> memo.createdDate ?: LocalDateTime.now() } // null 체크
 
-        logger.info("Calculated average creation time - Hours: {}, Minutes: {}, Seconds: {}", averageHours, averageMinutes, averageSeconds)
-        return MemoAverageCreationStats(
-            averageHours = averageHours,
-            averageMinutes = averageMinutes,
-            averageSeconds = averageSeconds,
-            creationTimes = creationDates,
-        )
+            logger.info(
+                "Calculated average creation time - Hours: {}, Minutes: {}, Seconds: {}",
+                averageHours,
+                averageMinutes,
+                averageSeconds,
+            )
+            return MemoAverageCreationStats(
+                averageHours = averageHours,
+                averageMinutes = averageMinutes,
+                averageSeconds = averageSeconds,
+                creationTimes = creationDates,
+            )
+        } catch (e: Exception) {
+            logger.error("Error calculating average memo creation time for member ID: {}", memberId, e)
+            throw RuntimeException("메모 생성 시간 계산 중 오류가 발생했습니다.")
+        }
     }
 
     // 3. 메모 길이 분석
     fun analyzeMemoLength(memberId: Long): MemoLengthStats {
         logger.info("Analyzing memo length for member ID: {}", memberId)
         val memos = dailyMemoRepository.findAllByMemberId(memberId)
+
         if (memos.isEmpty()) {
-            logger.warn("No memos found for member ID: {}, returning default values", memberId)
-            return MemoLengthStats(averageLength = 0.0, lengths = emptyList())
+            throw UserNotFoundException() // 예외 처리 추가
         }
 
         val memoLengths = memos.map { it.content.length }
