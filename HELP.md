@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.be-memo-app.memo' is invalid and this project uses 'com.be_memo_app.memo' instead.
+* The original package name 'com.be-memo-app.memo' is invalid and this project uses 'com.memo.memo' instead.
 
 # Getting Started
 
