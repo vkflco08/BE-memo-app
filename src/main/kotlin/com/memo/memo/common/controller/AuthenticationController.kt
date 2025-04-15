@@ -23,13 +23,13 @@ class AuthenticationController(
         @RequestBody tokenRequestDto: TokenDtoRequest,
     ): BaseResponse<TokenInfo> {
         val newAccessToken = signService.newAccessToken(tokenRequestDto)
-        return BaseResponse(data = newAccessToken)
+        return BaseResponse.success(data = newAccessToken)
     }
 
     @GetMapping("/roles")
-    fun getUserRoles(authentication: Authentication): Set<String> {
-        return authentication.authorities.stream()
+    fun getUserRoles(authentication: Authentication): Set<String> =
+        authentication.authorities
+            .stream()
             .map { obj: GrantedAuthority -> obj.authority }
             .collect(Collectors.toSet())
-    }
 }

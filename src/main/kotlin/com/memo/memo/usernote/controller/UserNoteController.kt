@@ -2,6 +2,7 @@ package com.memo.memo.usernote.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.usernote.dto.UserNoteDto
 import com.memo.memo.usernote.service.UserNoteService
 import org.springframework.security.core.context.SecurityContextHolder
@@ -27,9 +28,9 @@ class UserNoteController(
     ): BaseResponse<Unit> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         val resultMsg: String = userNoteService.saveUserNotes(userNoteDto, userId)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 
     /**
@@ -41,9 +42,9 @@ class UserNoteController(
     ): BaseResponse<Unit> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         val resultMsg: String = userNoteService.saveUserNote(userNoteDto, userId)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 
     /**
@@ -55,10 +56,10 @@ class UserNoteController(
     ): BaseResponse<List<UserNoteDto>?> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         userNoteService.deleteUserNote(noteId, userId)
         val resultMsg: List<UserNoteDto>? = userNoteService.getUserNote(userId)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse.success(data = resultMsg)
     }
 
     //    @Cacheable(value = ["userNote"], key = "#userId") // 캐시 이름은 "userNote", key는 userId로 설정
@@ -66,9 +67,9 @@ class UserNoteController(
     fun getUsernote(): BaseResponse<List<UserNoteDto>?> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
         val resultMsg: List<UserNoteDto>? = userNoteService.getUserNote(userId)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse.success(data = resultMsg)
     }
 }
