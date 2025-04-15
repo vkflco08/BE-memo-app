@@ -11,8 +11,9 @@ data class UserNoteDto(
 ) {
     fun toEntity(member: Member): UserNote =
         UserNote(
-            id = null, // ID는 DB에서 자동생성
-            title = title ?: "제목 없음", // 기본값 설정
+            id = null,
+            // ID는 DB에서 자동생성
+            title = title ?: "제목 없음",
             content = content,
             member = member,
         )

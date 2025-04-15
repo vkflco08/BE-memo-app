@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.memo.memo.common.authority
 
 import com.memo.memo.common.dto.CustomUser
@@ -60,7 +62,8 @@ class JwtTokenProvider {
         val now = Date()
         val refreshExpiration = Date(now.time + REFRESH_EXPIRATION_MILLISECONDS)
 
-        return Jwts.builder()
+        return Jwts
+            .builder()
             .setSubject(authentication.name)
             .claim("auth", authorities)
             .claim("userId", (authentication.principal as CustomUser).userId)
@@ -113,7 +116,8 @@ class JwtTokenProvider {
     }
 
     private fun getClaims(token: String): Claims =
-        Jwts.parserBuilder()
+        Jwts
+            .parserBuilder()
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token)

@@ -58,8 +58,10 @@ data class MemberDtoResponse(
     val loginId: String,
     val name: String,
     val email: String,
-    val profileImage: String?, // 기존 이미지 URL
-    val profileImageBase64: String? = null, // Base64로 인코딩된 이미지 데이터
+    val profileImage: String?,
+    // 기존 이미지 URL
+    val profileImageBase64: String? = null,
+    // Base64로 인코딩된 이미지 데이터
     val createdDate: LocalDateTime?,
 )
 
@@ -70,7 +72,8 @@ data class MemberProfileDtoRequest(
     @field:NotBlank(message = "이메일은 필수 항목입니다.")
     @field:Email(message = "유효하지 않은 이메일 형식입니다.")
     var email: String,
-    var profileImage: String? = null, // 프로필 이미지 URL (선택)
+    var profileImage: String? = null,
+    // 프로필 이미지 URL (선택)
 ) {
     fun toEntity(existingMember: Member): Member =
         existingMember.apply {

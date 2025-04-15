@@ -28,7 +28,7 @@ class UserNote(
     var content: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_user_note_member_id"))
-    val member: Member, // 유저와의 관계
+    val member: Member,
 ) : BaseEntity() {
     fun toDto(): UserNoteDto = UserNoteDto(id, title, content, member.id)
 

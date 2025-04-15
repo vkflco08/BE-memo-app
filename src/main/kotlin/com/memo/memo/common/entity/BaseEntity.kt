@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 import jakarta.persistence.*
 import lombok.Getter
 import org.springframework.data.annotation.CreatedBy

@@ -8,7 +8,7 @@ data class ContentDtoRequest(
     var memberId: Long,
     val title: String,
     val content: String,
-    val date: String, // yyyy-MM-dd 형식의 문자열
+    val date: String,
 ) {
     fun toEntity(member: Member): DailyMemo = DailyMemo(id, title, content, date, member)
 }
