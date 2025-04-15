@@ -66,7 +66,7 @@ data class MemberDtoResponse(
 )
 
 data class MemberProfileDtoRequest(
-    var id: Long? = null, // 사용자 ID
+    var id: Long? = null,
     @field:NotBlank(message = "이름은 필수 항목입니다.")
     var name: String,
     @field:NotBlank(message = "이메일은 필수 항목입니다.")
