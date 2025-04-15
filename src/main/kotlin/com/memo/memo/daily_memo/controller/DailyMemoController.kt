@@ -2,6 +2,7 @@ package com.memo.memo.daily_memo.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.daily_memo.dto.ContentDtoRequest
 import com.memo.memo.daily_memo.dto.ContentDtoResponse
 import com.memo.memo.daily_memo.service.DailyMemoService
@@ -32,10 +33,10 @@ class DailyMemoController(
     ): BaseResponse<Unit> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         contentDtoRequest.memberId = userId
         val resultMsg: String = dailyMemoService.saveMemo(contentDtoRequest)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 
     /**
@@ -49,10 +50,10 @@ class DailyMemoController(
     ): BaseResponse<Page<ContentDtoResponse>> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
         val resultMsg: Page<ContentDtoResponse> = dailyMemoService.getMemos(userId, page, size)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse.success(data = resultMsg)
     }
 
     /**
@@ -66,10 +67,10 @@ class DailyMemoController(
     ): BaseResponse<List<ContentDtoResponse>> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
         val resultMsg: List<ContentDtoResponse> = dailyMemoService.getMemosByMonth(userId, yearMonth)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse.success(data = resultMsg)
     }
 
     /**
@@ -82,9 +83,9 @@ class DailyMemoController(
     ): BaseResponse<ContentDtoResponse?> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         val resultMsg: ContentDtoResponse? = dailyMemoService.getMemo(userId, date)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse.success(data = resultMsg)
     }
 
     /**
@@ -97,9 +98,9 @@ class DailyMemoController(
     ): BaseResponse<Unit?> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         val resultMsg: String = dailyMemoService.removeMemo(userId, date)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 
     /**
@@ -111,10 +112,10 @@ class DailyMemoController(
     ): BaseResponse<Unit> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
         contentDtoRequest.id = userId
         val resultMsg: String = dailyMemoService.editMemo(contentDtoRequest)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 
     /**
@@ -128,8 +129,8 @@ class DailyMemoController(
     ): BaseResponse<Page<ContentDtoResponse>> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = dailyMemoService.searchContentByKeyword(userId, keyword, page, size))
+        return BaseResponse.success(data = dailyMemoService.searchContentByKeyword(userId, keyword, page, size))
     }
 }

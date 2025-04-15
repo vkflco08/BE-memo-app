@@ -2,6 +2,7 @@ package com.memo.memo.topic_content.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.topic_content.dto.TopicContentRequestDto
 import com.memo.memo.topic_content.dto.TopicContentResponseDto
 import com.memo.memo.topic_content.dto.TopicDto
@@ -29,9 +30,9 @@ class TopicContentController(
     ): BaseResponse<TopicDto> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = topicContentService.createTopicContent(userId, topicContentRequestDto))
+        return BaseResponse.success(data = topicContentService.createTopicContent(userId, topicContentRequestDto))
     }
 
     @PutMapping("/edit")
@@ -40,26 +41,22 @@ class TopicContentController(
     ): BaseResponse<TopicDto> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = topicContentService.updateTopicContent(userId, topicContentRequestDto))
+        return BaseResponse.success(data = topicContentService.updateTopicContent(userId, topicContentRequestDto))
     }
 
     // 특정 컨텐츠 불러오기
     @GetMapping("/{contentId}")
     fun getTopicContent(
         @PathVariable contentId: Long,
-    ): BaseResponse<TopicContentResponseDto> {
-        return BaseResponse(data = topicContentService.getTopicContent(contentId))
-    }
+    ): BaseResponse<TopicContentResponseDto> = BaseResponse.success(data = topicContentService.getTopicContent(contentId))
 
     // 컨텐츠 번호
     @DeleteMapping("/{contentId}")
     fun deleteTopicContent(
         @PathVariable contentId: Long,
-    ): BaseResponse<Unit> {
-        return BaseResponse(message = topicContentService.deleteTopicContent(contentId))
-    }
+    ): BaseResponse<Unit> = BaseResponse.success(message = topicContentService.deleteTopicContent(contentId))
 
     // 주제에 해당하는 전체 콘텐츠 불러오기
     @GetMapping("/{topicId}/all")
@@ -70,9 +67,9 @@ class TopicContentController(
     ): BaseResponse<Page<TopicContentResponseDto>> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = topicContentService.getAllTopicContentsByMemberAndTopic(userId, topicId, page, size))
+        return BaseResponse.success(data = topicContentService.getAllTopicContentsByMemberAndTopic(userId, topicId, page, size))
     }
 
     /**
@@ -87,8 +84,8 @@ class TopicContentController(
     ): BaseResponse<Page<TopicContentResponseDto>> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = topicContentService.searchTopicContentByKeyword(userId, topicId, keyword, page, size))
+        return BaseResponse.success(data = topicContentService.searchTopicContentByKeyword(userId, topicId, keyword, page, size))
     }
 }

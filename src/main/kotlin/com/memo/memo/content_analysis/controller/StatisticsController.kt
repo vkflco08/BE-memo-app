@@ -2,6 +2,7 @@ package com.memo.memo.content_analysis.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.content_analysis.dto.StatisticsResponseDto
 import com.memo.memo.content_analysis.service.StatisticsService
 import org.springframework.security.core.context.SecurityContextHolder
@@ -18,11 +19,12 @@ class StatisticsController(
     fun getStatistics(): BaseResponse<StatisticsResponseDto> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
         val probability = statisticsService.calculateMemoCreationProbability(userId)
         val avgTime = statisticsService.calculateAverageMemoCreationTime(userId)
         val memoLength = statisticsService.analyzeMemoLength(userId)
-        return BaseResponse(data = StatisticsResponseDto(probability, avgTime, memoLength))
+
+        return BaseResponse.success(StatisticsResponseDto(probability, avgTime, memoLength))
     }
 }

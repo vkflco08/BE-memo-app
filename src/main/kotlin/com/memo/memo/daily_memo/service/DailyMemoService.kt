@@ -1,6 +1,8 @@
 package com.memo.memo.daily_memo.service
 
-import com.memo.memo.common.exception.InvalidInputException
+import com.memo.memo.common.exception.exceptions.InvalidInputException
+import com.memo.memo.common.exception.exceptions.MemoNotFoundException
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.daily_memo.dto.ContentDtoRequest
 import com.memo.memo.daily_memo.dto.ContentDtoResponse
 import com.memo.memo.daily_memo.entity.DailyMemo
@@ -135,7 +137,7 @@ class DailyMemoService(
     fun editMemo(contentDtoRequest: ContentDtoRequest): String {
         val findMember =
             memberRepository.findByIdOrNull(contentDtoRequest.id)
-                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+                ?: throw UserNotFoundException()
         val existingContent = dailyMemoRepository.findByMemberAndDate(findMember, contentDtoRequest.date)
 
         return if (existingContent != null) {
@@ -145,7 +147,7 @@ class DailyMemoService(
             dailyMemoRepository.save(existingContent) // 변경된 내용 저장
             return "수정이 완료되었습니다."
         } else {
-            return "수정할 메모가 존재하지 않습니다."
+            throw MemoNotFoundException()
         }
     }
 
@@ -160,7 +162,7 @@ class DailyMemoService(
     ): Page<ContentDtoResponse> {
         val findMember: Member =
             memberRepository.findByIdOrNull(userId)
-                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+                ?: throw UserNotFoundException()
 
         val pageable: Pageable = PageRequest.of(page, size, Sort.by("date").descending())
         val contents = dailyMemoRepository.searchByMemberAndKeyword(findMember, keyword, pageable)

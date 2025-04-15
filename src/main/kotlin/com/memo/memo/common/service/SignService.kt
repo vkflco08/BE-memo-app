@@ -5,7 +5,7 @@ import com.memo.memo.common.authority.TokenInfo
 import com.memo.memo.common.dto.CustomUser
 import com.memo.memo.common.dto.TokenDtoRequest
 import com.memo.memo.common.entity.MemberRefreshToken
-import com.memo.memo.common.exception.InvalidInputException
+import com.memo.memo.common.exception.exceptions.InvalidInputException
 import com.memo.memo.common.repository.MemberRefreshTokenRepository
 import com.memo.memo.member.entity.Member
 import jakarta.transaction.Transactional

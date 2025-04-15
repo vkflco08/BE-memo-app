@@ -2,6 +2,7 @@ package com.memo.memo.topic_content.controller
 
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.topic_content.dto.TopicDto
 import com.memo.memo.topic_content.dto.TopicResponseDto
 import com.memo.memo.topic_content.service.TopicService
@@ -26,9 +27,9 @@ class TopicController(
     ): BaseResponse<Long> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = topicService.createTopic(userId, topicName))
+        return BaseResponse.success(data = topicService.createTopic(userId, topicName))
     }
 
     @PutMapping("/edit")
@@ -37,23 +38,23 @@ class TopicController(
     ): BaseResponse<Unit> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(message = topicService.updateTopic(userId, topicRequestDto))
+        return BaseResponse.success(message = topicService.updateTopic(userId, topicRequestDto))
     }
 
     @DeleteMapping("/{topicId}")
     fun deleteTopic(
         @PathVariable topicId: Long,
-    ): BaseResponse<Unit> = BaseResponse(message = topicService.deleteTopic(topicId))
+    ): BaseResponse<Unit> = BaseResponse.success(message = topicService.deleteTopic(topicId))
 
     // 주제번호 제목 갯수
     @GetMapping("/list")
     fun getTopicsWithContentCountByMember(): BaseResponse<List<TopicResponseDto>> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
-        return BaseResponse(data = topicService.getTopicsWithContentCountByMember(userId))
+        return BaseResponse.success(data = topicService.getTopicsWithContentCountByMember(userId))
     }
 }

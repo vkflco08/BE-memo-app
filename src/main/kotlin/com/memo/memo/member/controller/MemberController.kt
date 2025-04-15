@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.memo.memo.common.authority.TokenInfo
 import com.memo.memo.common.dto.BaseResponse
 import com.memo.memo.common.dto.CustomUser
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.member.dto.LoginDto
 import com.memo.memo.member.dto.MemberDtoRequest
 import com.memo.memo.member.dto.MemberDtoResponse
@@ -36,7 +37,7 @@ class MemberController(
         @RequestBody @Valid memberDtoRequest: MemberDtoRequest,
     ): BaseResponse<Unit> {
         val resultMsg: String = memberService.signUp(memberDtoRequest)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 
     /**
@@ -47,7 +48,7 @@ class MemberController(
         @RequestBody @Valid loginDto: LoginDto,
     ): BaseResponse<TokenInfo> {
         val tokenInfo = memberService.login(loginDto)
-        return BaseResponse(data = tokenInfo)
+        return BaseResponse.success(data = tokenInfo)
     }
 
     /**
@@ -55,9 +56,11 @@ class MemberController(
      */
     @GetMapping("/info")
     fun searchMyInfo(): BaseResponse<MemberDtoResponse> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: throw UserNotFoundException()
         val response = memberService.searchMyInfo(userId)
-        return BaseResponse(data = response)
+        return BaseResponse.success(data = response)
     }
 
     /**
@@ -75,11 +78,13 @@ class MemberController(
         val memberDto = objectMapper.readValue(memberProfileDtoRequest, MemberProfileDtoRequest::class.java)
 
         // 사용자 정보 처리
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+        val userId =
+            (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+                ?: throw UserNotFoundException()
         memberDto.id = userId
 
         val resultMsg = memberService.saveMyInfo(profileImage, memberDto)
-        return BaseResponse(data = resultMsg)
+        return BaseResponse.success(data = resultMsg)
     }
 
     /**
@@ -89,9 +94,9 @@ class MemberController(
     fun logout(): BaseResponse<Unit> {
         val userId =
             (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-                ?: return BaseResponse(message = "유저를 찾을 수 없습니다")
+                ?: throw UserNotFoundException()
 
         val resultMsg: String = memberService.deleteRefToken(userId)
-        return BaseResponse(message = resultMsg)
+        return BaseResponse.success(message = resultMsg)
     }
 }

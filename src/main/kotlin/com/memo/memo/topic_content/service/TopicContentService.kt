@@ -1,6 +1,8 @@
 package com.memo.memo.topic_content.service
 
-import com.memo.memo.common.exception.InvalidInputException
+import com.memo.memo.common.exception.exceptions.TopicContentNotFoundException
+import com.memo.memo.common.exception.exceptions.TopicNotFoundException
+import com.memo.memo.common.exception.exceptions.UserNotFoundException
 import com.memo.memo.member.repository.MemberRepository
 import com.memo.memo.topic_content.dto.TopicContentRequestDto
 import com.memo.memo.topic_content.dto.TopicContentResponseDto
@@ -30,10 +32,10 @@ class TopicContentService(
     ): TopicDto {
         val findMember =
             memberRepository.findByIdOrNull(userId)
-                ?: throw InvalidInputException("존재하지 않는 회원입니다.")
+                ?: throw UserNotFoundException()
         val findTopic =
             topicRepository.findByIdOrNull(topicContentRequestDto.topicId)
-                ?: throw InvalidInputException("존재하지 않는 주제입니다.")
+                ?: throw TopicNotFoundException()
 
         val topicContent = topicContentRequestDto.toEntity(findMember, findTopic)
         topicContentRepository.save(topicContent)
@@ -48,10 +50,10 @@ class TopicContentService(
     ): TopicDto {
         val topicContent =
             topicContentRepository.findByIdOrNull(topicContentRequestDto.contentId)
-                ?: throw IllegalArgumentException("작성한 기록을 찾을 수 없습니다.")
+                ?: throw TopicContentNotFoundException()
         val findTopic =
             topicRepository.findByIdOrNull(topicContentRequestDto.topicId)
-                ?: throw InvalidInputException("존재하지 않는 주제입니다.")
+                ?: throw TopicNotFoundException()
         topicContent.title = topicContentRequestDto.title
         topicContent.content = topicContentRequestDto.content
         topicContentRepository.save(topicContent)
@@ -112,7 +114,7 @@ class TopicContentService(
     fun getTopicContent(contentId: Long): TopicContentResponseDto {
         val getTopicContent =
             topicContentRepository.findByIdOrNull(contentId)
-                ?: throw IllegalArgumentException("작성한 기록을 찾을 수 없습니다.")
+                ?: throw TopicContentNotFoundException()
         return TopicContentResponseDto(
             contentId = getTopicContent.id,
             title = getTopicContent.title,

@@ -1,6 +1,7 @@
 package com.memo.memo.member.controller
 
 import com.memo.memo.common.dto.BaseResponse
+import com.memo.memo.common.exception.exceptions.FileUploadException
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -41,7 +42,7 @@ class FileController {
         }
 
         // 이미지가 없으면 404 반환
-        return ResponseEntity.notFound().build()
+        throw FileUploadException()
     }
 
     @GetMapping("/uploads/{userId}/{filename}")
@@ -51,6 +52,6 @@ class FileController {
     ): BaseResponse<File> {
         // 사용자 폴더 경로 생성
         val filePath = File("$uploadDir/$userId/$filename")
-        return BaseResponse(data = filePath)
+        return BaseResponse.success(data = filePath)
     }
 }
