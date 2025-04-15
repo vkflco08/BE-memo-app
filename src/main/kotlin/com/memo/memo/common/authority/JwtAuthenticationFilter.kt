@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PROPERTY", "DEPRECATION", "UNUSED_VARIABLE")
+
 package com.memo.memo.common.authority
 
 import jakarta.servlet.FilterChain
