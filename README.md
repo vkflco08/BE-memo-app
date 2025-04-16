@@ -82,6 +82,6 @@ Redis, MySQL, JWT 기반 인증 및 API Rate Limiting을 적용하여 보안과 
 ---
 
 ## 🚀 배포 방식
-- **GitHub 푸시**: 코드 변경 사항을 GitHub에 푸시하면 Webhook이 작동합니다.
-- **Jenkins 실행**: 개인 리눅스 서버의 Jenkins가 Webhook을 통해 빌드를 트리거합니다.
-- **Spring Boot 컨테이너 배포**: Jenkins 스크립트에서 Spring Boot 컨테이너를 생성하여 최신 빌드를 배포합니다.
+- **Docker Hub 푸시**: GitHub에서 코드를 빌드하여 Docker Hub에 이미지를 푸시하면, Docker Hub의 Webhook이 작동합니다.
+- **Jenkins CD 실행**: 개인 리눅스 서버의 Jenkins가 Docker Hub Webhook을 통해 CD 파이프라인을 실행합니다.
+- **Spring Boot 컨테이너 배포**: Jenkins 스크립트에서 최신 이미지를 pull 받아 Redis와 함께 Spring Boot 컨테이너를 실행합니다.
